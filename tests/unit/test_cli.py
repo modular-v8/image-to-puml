@@ -8,7 +8,6 @@ yet built), so a dummy file is sufficient.
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +29,7 @@ from umlregen.errors import (
 )
 from umlregen.perception.client import VisionResponse
 
-requires_java = pytest.mark.skipif(shutil.which("java") is None, reason="java not available on PATH")
+from _toolchain import requires_render_toolchain as requires_java
 
 runner = CliRunner()
 
@@ -413,6 +412,16 @@ def test_eval_command_reports_scorecard_and_failure_breakdown(
         scored=[DiagramResult(name="ok_one", score=score(diagram, diagram), cost_usd=0.001, latency_seconds=0.1, warning_count=0)],
         failures=[("bad_one", "decline")],
     )
+    # T5.7: _build_client must be mocked too, not just run_eval_set -- it's
+    # called unconditionally before run_eval_set and constructs a real
+    # OpenRouterClient, which raises ProviderAuthError with no key present.
+    # This test previously passed locally only because cli.py's per-command
+    # _load_dotenv() re-populated OPENROUTER_API_KEY from this repo's local
+    # .env file (via os.environ.setdefault) even after the autouse
+    # _no_env_key fixture deleted it -- CI, with no .env file checked out,
+    # exposed that the "offline, no key" guarantee was never actually true
+    # for this one test.
+    _patch_client(monkeypatch, object())
     monkeypatch.setattr(cli, "run_eval_set", lambda *a, **k: fake_result)
     monkeypatch.setattr(cli, "append_run_log", lambda *a, **k: None)
     monkeypatch.setattr(cli, "append_failure_log", lambda *a, **k: None)

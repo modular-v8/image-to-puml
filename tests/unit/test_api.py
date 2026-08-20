@@ -2,7 +2,6 @@
 stage A finds nothing, and that a successful run produces a Result whose
 .puml actually renders. No network -- uses a scripted VisionClient."""
 
-import shutil
 from pathlib import Path
 from typing import Any
 
@@ -14,9 +13,7 @@ from umlregen.errors import NoClassesFound
 from umlregen.perception.client import VisionResponse
 from umlregen.render.plantuml import render
 
-requires_java = pytest.mark.skipif(
-    shutil.which("java") is None, reason="java not available on PATH"
-)
+from _toolchain import requires_render_toolchain as requires_java
 
 _STAGE_A_EMPTY = {"classes": [], "relationships": []}
 

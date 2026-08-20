@@ -2,16 +2,11 @@
 least three visually distinct styles applied across the set. Requires
 Java (it actually renders); skipped cleanly when absent."""
 
-import shutil
 from pathlib import Path
-
-import pytest
 
 from umlregen.eval.corpus import _STYLES, build_corpus
 
-requires_java = pytest.mark.skipif(
-    shutil.which("java") is None, reason="java not available on PATH"
-)
+from _toolchain import requires_render_toolchain as requires_java
 
 
 def test_at_least_three_distinct_styles_defined() -> None:

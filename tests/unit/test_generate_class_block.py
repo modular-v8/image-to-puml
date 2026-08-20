@@ -4,17 +4,11 @@ non-flaky) rather than parsed out of rendered SVG, since PlantUML re-styles
 {static}/{abstract} as underline/italic on render rather than keeping the
 literal markers as text."""
 
-import shutil
-
-import pytest
-
 from umlregen.generate.puml import ir_to_puml
 from umlregen.ir.models import Class, Diagram, Member
 from umlregen.render.plantuml import render
 
-requires_java = pytest.mark.skipif(
-    shutil.which("java") is None, reason="java not available on PATH"
-)
+from _toolchain import requires_render_toolchain as requires_java
 
 
 def _all_member_variations_diagram() -> Diagram:

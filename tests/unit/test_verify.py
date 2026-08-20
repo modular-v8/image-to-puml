@@ -8,20 +8,16 @@ Skipped cleanly if the toolchain isn't present, matching T1.8's pattern.
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 from typing import Any
-
-import pytest
 
 from umlregen.ir.models import Diagram
 from umlregen.perception.client import VisionResponse
 from umlregen.verify.loop import verify
 
-pytestmark = pytest.mark.skipif(
-    shutil.which("java") is None or shutil.which("dot") is None,
-    reason="requires java and dot on PATH to actually render each round",
-)
+from _toolchain import requires_render_toolchain
+
+pytestmark = requires_render_toolchain
 
 
 class _KeyedScriptedClient:

@@ -20,8 +20,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-          python-version: "3.12"
 
+      # Reads the committed .python-version (3.12) automatically.
       - name: Install dependencies
         run: uv sync
 

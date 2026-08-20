@@ -2,17 +2,11 @@
 and punctuation, empty member lists, and a class with no relationships all
 must emit .puml that renders without error."""
 
-import shutil
-
-import pytest
-
 from umlregen.generate.puml import ir_to_puml
 from umlregen.ir.models import Class, Diagram
 from umlregen.render.plantuml import render
 
-requires_java = pytest.mark.skipif(
-    shutil.which("java") is None, reason="java not available on PATH"
-)
+from _toolchain import requires_render_toolchain as requires_java
 
 
 @requires_java

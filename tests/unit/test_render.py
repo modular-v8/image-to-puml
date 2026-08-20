@@ -3,16 +3,12 @@
 Skipped cleanly when java isn't on PATH, since these actually shell out.
 """
 
-import shutil
-
 import pytest
 
 from umlregen.errors import RenderFailed
 from umlregen.render.plantuml import render
 
-requires_java = pytest.mark.skipif(
-    shutil.which("java") is None, reason="java not available on PATH"
-)
+from _toolchain import requires_render_toolchain as requires_java
 
 VALID_PUML = """@startuml
 class Foo {
