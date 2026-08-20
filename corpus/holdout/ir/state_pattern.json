@@ -1,0 +1,58 @@
+{
+  "name": "state_pattern",
+  "classes": [
+    {
+      "id": "Context",
+      "name": "Context",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "request", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "State",
+      "name": "State",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "handle", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteStateA",
+      "name": "ConcreteStateA",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "handle", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteStateB",
+      "name": "ConcreteStateB",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "handle", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "Context", "target": "State", "kind": "aggregation", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "hollow diamond at Context's edge, plain solid line to State" },
+    { "source": "ConcreteStateA", "target": "State", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at State, shared with ConcreteStateB -- drawn with realization notation despite State not showing an explicit interface marker" },
+    { "source": "ConcreteStateB", "target": "State", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at State, shared with ConcreteStateA" }
+  ],
+  "notes": [
+    { "text": "state.handle()", "class_id": "Context" }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,131 @@
+{
+  "name": "inventory_stereotypes",
+  "classes": [
+    {
+      "id": "Warehouse",
+      "name": "Warehouse",
+      "kind": "class",
+      "stereotype": "Entity",
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "id",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "location",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "capacity",
+          "type": "int",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "instanceCount",
+          "type": "int",
+          "params": null,
+          "is_static": true,
+          "is_abstract": false
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "addStock",
+          "type": "void",
+          "params": "item: StockItem",
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "+",
+          "name": "removeStock",
+          "type": "bool",
+          "params": "item: StockItem",
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "+",
+          "name": "create",
+          "type": "Warehouse",
+          "params": "",
+          "is_static": true,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "StockItem",
+      "name": "StockItem",
+      "kind": "class",
+      "stereotype": "ValueObject",
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "sku",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "quantity",
+          "type": "int",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Status",
+      "name": "Status",
+      "kind": "enum",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Warehouse",
+      "target": "StockItem",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "0..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "StockItem",
+      "target": "Status",
+      "kind": "association",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

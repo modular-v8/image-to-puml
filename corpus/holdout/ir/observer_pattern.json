@@ -1,0 +1,60 @@
+{
+  "name": "observer_pattern",
+  "classes": [
+    {
+      "id": "Observer",
+      "name": "Observer",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "notify", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Subject",
+      "name": "Subject",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "registerObserver", "type": null, "params": "observer", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "unregisterObserver", "type": null, "params": "observer", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "notifyObservers", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteObserverA",
+      "name": "ConcreteObserverA",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "notify", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteObserverB",
+      "name": "ConcreteObserverB",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "notify", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "ConcreteObserverA", "target": "Observer", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Observer" },
+    { "source": "ConcreteObserverB", "target": "Observer", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Observer" },
+    { "source": "Subject", "target": "Observer", "kind": "aggregation", "source_mult": null, "target_mult": "*", "label": "ObserverCollection", "confidence": 1.0, "evidence": "solid line, hollow diamond at Subject, labelled '* (ObserverCollection)'" }
+  ],
+  "notes": [
+    { "text": "notifyObservers() :\nfor observer in ObserverCollection\ncall observer.notify()", "class_id": "Subject" }
+  ],
+  "warnings": []
+}

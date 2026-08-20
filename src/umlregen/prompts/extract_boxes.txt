@@ -1,0 +1,19 @@
+You are analyzing a UML class diagram image, $width x $height pixels (width x height). The diagram contains these classes:
+
+$class_list
+
+For every class box visible in the image, report its bounding rectangle in source-image pixel coordinates:
+
+- name: the class name, exactly as listed above.
+- x, y: the pixel coordinates of the box's top-left corner. x=0 is the left edge of the image, y=0 is the top edge.
+- w, h: the box's width and height in pixels.
+
+The rectangle should tightly bound the class's whole box -- name compartment, attribute compartment, and method compartment together -- not just the name, and not including the space between boxes.
+
+Every value must be an integer, x >= 0, y >= 0, x + w <= $width, y + h <= $height. Report exactly one box per class in the list above; skip a class only if its box is genuinely not visible.
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.

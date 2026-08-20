@@ -1,0 +1,119 @@
+{
+  "name": "shape_hierarchy",
+  "classes": [
+    {
+      "id": "Drawable",
+      "name": "Drawable",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "draw",
+          "type": "void",
+          "params": "",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Circle",
+      "name": "Circle",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "radius",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Square",
+      "name": "Square",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "side",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Triangle",
+      "name": "Triangle",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "base",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "height",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Circle",
+      "target": "Drawable",
+      "kind": "realization",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Square",
+      "target": "Drawable",
+      "kind": "realization",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Triangle",
+      "target": "Drawable",
+      "kind": "realization",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

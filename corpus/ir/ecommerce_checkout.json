@@ -1,0 +1,315 @@
+{
+  "name": "ecommerce_checkout",
+  "classes": [
+    {
+      "id": "Person",
+      "name": "Person",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "#",
+          "name": "name",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "#",
+          "name": "email",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "getName",
+          "type": "str",
+          "params": "",
+          "is_static": false,
+          "is_abstract": true
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Customer",
+      "name": "Customer",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "customerId",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "loyaltyPoints",
+          "type": "int",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "placeOrder",
+          "type": "void",
+          "params": "order: Order",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "PaymentMethod",
+      "name": "PaymentMethod",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "charge",
+          "type": "bool",
+          "params": "amount: float",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "CreditCard",
+      "name": "CreditCard",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "cardNumber",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "expiryDate",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "charge",
+          "type": "bool",
+          "params": "amount: float",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Order",
+      "name": "Order",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "orderId",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "orderDate",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "total",
+          "type": "float",
+          "params": "",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "OrderLine",
+      "name": "OrderLine",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "quantity",
+          "type": "int",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "unitPrice",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Product",
+      "name": "Product",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "sku",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "name",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "-",
+          "name": "price",
+          "type": "float",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "PaymentGateway",
+      "name": "PaymentGateway",
+      "kind": "class",
+      "stereotype": "Service",
+      "attributes": [],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "authorize",
+          "type": "bool",
+          "params": "card: CreditCard, amount: float",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Customer",
+      "target": "Person",
+      "kind": "inheritance",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "CreditCard",
+      "target": "PaymentMethod",
+      "kind": "realization",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "Order",
+      "target": "OrderLine",
+      "kind": "composition",
+      "source_mult": "1",
+      "target_mult": "1..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "Customer",
+      "target": "PaymentMethod",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "0..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "OrderLine",
+      "target": "Product",
+      "kind": "association",
+      "source_mult": "*",
+      "target_mult": "1",
+      "label": "references",
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "Customer",
+      "target": "Order",
+      "kind": "directed_association",
+      "source_mult": null,
+      "target_mult": null,
+      "label": "places",
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    },
+    {
+      "source": "Order",
+      "target": "PaymentGateway",
+      "kind": "dependency",
+      "source_mult": null,
+      "target_mult": null,
+      "label": "processes payment via",
+      "confidence": 1.0,
+      "evidence": "hand-authored"
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

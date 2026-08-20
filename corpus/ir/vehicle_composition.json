@@ -1,0 +1,93 @@
+{
+  "name": "vehicle_composition",
+  "classes": [
+    {
+      "id": "Car",
+      "name": "Car",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "vin",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Engine",
+      "name": "Engine",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "horsepower",
+          "type": "int",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Wheel",
+      "name": "Wheel",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Piston",
+      "name": "Piston",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Car",
+      "target": "Engine",
+      "kind": "composition",
+      "source_mult": "1",
+      "target_mult": "1",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Car",
+      "target": "Wheel",
+      "kind": "composition",
+      "source_mult": "1",
+      "target_mult": "4",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Engine",
+      "target": "Piston",
+      "kind": "composition",
+      "source_mult": "1",
+      "target_mult": "4",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

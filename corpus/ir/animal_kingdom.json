@@ -1,0 +1,102 @@
+{
+  "name": "animal_kingdom",
+  "classes": [
+    {
+      "id": "Animal",
+      "name": "Animal",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "#",
+          "name": "name",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Mammal",
+      "name": "Mammal",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "#",
+          "name": "furColor",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Dog",
+      "name": "Dog",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "breed",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "DietType",
+      "name": "DietType",
+      "kind": "enum",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Mammal",
+      "target": "Animal",
+      "kind": "inheritance",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Dog",
+      "target": "Mammal",
+      "kind": "inheritance",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Animal",
+      "target": "DietType",
+      "kind": "association",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

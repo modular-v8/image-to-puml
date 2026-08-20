@@ -1,0 +1,175 @@
+{
+  "raw_text": "{\"classes\": [{\"name\": \"CreditCard\", \"kind\": \"class\", \"attributes\": [{\"visibility\": \"-\", \"name\": \"cardNumber\", \"type\": \"str\"}, {\"visibility\": \"-\", \"name\": \"expiryDate\", \"type\": \"str\"}], \"methods\": [{\"visibility\": \"+\", \"name\": \"charge\", \"params\": \"amount: float\", \"type]: \"  : \"bool\"}]}, {\"name\": \"Customer\", \"kind\": \"class\", \"attributes\": [{\"visibility\": \"-\", \"name\": \"customerId\", \"type\": \"str\"}, {\"visibility\": \"-\", \"name\": \"loyaltyPoints\", \"type\": \"int\"}], \"methods\": [{\"visibility\": \"+\", \"name\": \"placeOrder\", \"params\": \"order: Order\", \"type]: \"  : \"void\"}]}, {\"name\": \"PaymentMethod\", \"kind\": \"interface\", \"stereotype\": \"I\", \"attributes\": [], \"methods\": [{\"visibility\": \"+\", \"name\": \"charge\", \"params\": \"amount: float\", \"type]: \"  : \"bool\"}]}, {\"name\": \"Order\", \"kind\": \"class\", \"attributes\": [{\"visibility\": \"-\", \"name\": \"orderId\", \"type\": \"str\"}, {\"visibility\": \"-\", \"name\": \"orderDate\", \"type\": \"str\"}], \"methods\": [{\"visibility\": \"+\", \"name\": \"total\", \"params\": \"\", \"type]: \"  : \"float\"}]}, {\"name\": \"Person\", \"kind\": \"abstract\", \"attributes\": [{\"visibility\": \"#\", \"name\": \"name\", \"type\": \"str\"}, {\"visibility\": \"#\", \"name\": \"email\", \"type\": \"str\"}], \"methods\": [{\"visibility\": \"+\", \"name\": \"getName\", \"params\": \"\", \"type]: \"  : \"str\"}]}, {\"name\": \"OrderLine\", \"kind\": \"class\", \"attributes\": [{\"visibility\": \"-\", \"name\": \"quantity\", \"type\": \"int\"}, {\"visibility\": \"-\", \"name\": \"unitPrice\", \"type\": \"float\"}], \"methods\": []}, {\"name\": \"PaymentGateway\", \"kind\": \"class\", \"stereotype\": \"Service\", \"attributes\": [], \"methods\": [{\"visibility\": \"+\", \"name\": \"authorize\", \"params\": \"card: CreditCard, amount: float\", \"type]: \"  : \"bool\"}]}, {\"name\": \"Product\", \"kind\": \"class\", \"attributes\": [{\"visibility\": \"-\", \"name\": \"sku\", \"type\": \"str\"}, {\"visibility\": \"-\", \"name\": \"name\", \"type\": \"str\"}, {\"visibility\": \"-\", \"name\": \"price\", \"type\": \"float\"}], \"methods\": []}], \"relationships\": []}",
+  "parsed_json": {
+    "classes": [
+      {
+        "name": "CreditCard",
+        "kind": "class",
+        "attributes": [
+          {
+            "visibility": "-",
+            "name": "cardNumber",
+            "type": "str"
+          },
+          {
+            "visibility": "-",
+            "name": "expiryDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "charge",
+            "params": "amount: float",
+            "type]: ": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Customer",
+        "kind": "class",
+        "attributes": [
+          {
+            "visibility": "-",
+            "name": "customerId",
+            "type": "str"
+          },
+          {
+            "visibility": "-",
+            "name": "loyaltyPoints",
+            "type": "int"
+          }
+        ],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "placeOrder",
+            "params": "order: Order",
+            "type]: ": "void"
+          }
+        ]
+      },
+      {
+        "name": "PaymentMethod",
+        "kind": "interface",
+        "stereotype": "I",
+        "attributes": [],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "charge",
+            "params": "amount: float",
+            "type]: ": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Order",
+        "kind": "class",
+        "attributes": [
+          {
+            "visibility": "-",
+            "name": "orderId",
+            "type": "str"
+          },
+          {
+            "visibility": "-",
+            "name": "orderDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "total",
+            "params": "",
+            "type]: ": "float"
+          }
+        ]
+      },
+      {
+        "name": "Person",
+        "kind": "abstract",
+        "attributes": [
+          {
+            "visibility": "#",
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "visibility": "#",
+            "name": "email",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "getName",
+            "params": "",
+            "type]: ": "str"
+          }
+        ]
+      },
+      {
+        "name": "OrderLine",
+        "kind": "class",
+        "attributes": [
+          {
+            "visibility": "-",
+            "name": "quantity",
+            "type": "int"
+          },
+          {
+            "visibility": "-",
+            "name": "unitPrice",
+            "type": "float"
+          }
+        ],
+        "methods": []
+      },
+      {
+        "name": "PaymentGateway",
+        "kind": "class",
+        "stereotype": "Service",
+        "attributes": [],
+        "methods": [
+          {
+            "visibility": "+",
+            "name": "authorize",
+            "params": "card: CreditCard, amount: float",
+            "type]: ": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Product",
+        "kind": "class",
+        "attributes": [
+          {
+            "visibility": "-",
+            "name": "sku",
+            "type": "str"
+          },
+          {
+            "visibility": "-",
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "visibility": "-",
+            "name": "price",
+            "type": "float"
+          }
+        ],
+        "methods": []
+      }
+    ],
+    "relationships": []
+  },
+  "model_id": "google/gemma-4-26b-a4b-it",
+  "prompt_tokens": 1710,
+  "completion_tokens": 569,
+  "cost_usd": 0.0003986
+}

@@ -1,0 +1,142 @@
+{
+  "name": "wikipedia_domain_model",
+  "classes": [
+    {
+      "id": "I0",
+      "name": "Interface I0",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "Operatie0",
+          "type": null,
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "+",
+          "name": "Operatie1",
+          "type": "int[]",
+          "params": "A : int",
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "K0",
+      "name": "Klasse K0",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "K0_a0",
+          "type": "char[]",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "K1",
+      "name": "Klasse K1",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        {
+          "visibility": "+",
+          "name": "Operatie1",
+          "type": "int[]",
+          "params": "A : int",
+          "is_static": false,
+          "is_abstract": false
+        },
+        {
+          "visibility": "+",
+          "name": "Operatie2",
+          "type": null,
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Standard",
+      "name": "Standard",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "HK0",
+      "name": "Hulpklasse HK0",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "K1",
+      "target": "K0",
+      "kind": "inheritance",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "solid line, hollow triangle at K0"
+    },
+    {
+      "source": "K0",
+      "target": "I0",
+      "kind": "realization",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "dashed line originates at K0's box, routes along the package's top-right corner, hollow triangle at I0 -- confirmed by close inspection after the model's first extraction disagreed with the original (wrong) K1 attribution"
+    },
+    {
+      "source": "K0",
+      "target": "Standard",
+      "kind": "dependency",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": "dashed line, open arrowhead at Standard"
+    },
+    {
+      "source": "K1",
+      "target": "HK0",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "*",
+      "label": "Aggregatie",
+      "confidence": 1.0,
+      "evidence": "plain line labelled 'Aggregatie' (Dutch: aggregation) with role names 'Heeft'/'Wordt gebruikt'; no diamond glyph is drawn, the kind is stated in text only"
+    }
+  ],
+  "notes": [
+    {
+      "text": "Noot",
+      "class_id": null
+    }
+  ],
+  "warnings": []
+}

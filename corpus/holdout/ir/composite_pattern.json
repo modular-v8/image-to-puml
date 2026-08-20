@@ -1,0 +1,48 @@
+{
+  "name": "composite_pattern",
+  "classes": [
+    {
+      "id": "Component",
+      "name": "Component",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "operation", "type": null, "params": "", "is_static": false, "is_abstract": true }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Leaf",
+      "name": "Leaf",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "operation", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Composite",
+      "name": "Composite",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "operation", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": "+", "name": "add", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": "+", "name": "remove", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": "+", "name": "getChild", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "Leaf", "target": "Component", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Component" },
+    { "source": "Composite", "target": "Component", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Component" },
+    { "source": "Composite", "target": "Component", "kind": "aggregation", "source_mult": "1", "target_mult": "0..*", "label": null, "confidence": 1.0, "evidence": "hollow diamond at Composite, labelled '1 parent' near Composite and '0..* child' near Component -- the recursive composite-holds-children edge" }
+  ],
+  "notes": [],
+  "warnings": []
+}

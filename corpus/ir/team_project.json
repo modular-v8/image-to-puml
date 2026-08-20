@@ -1,0 +1,94 @@
+{
+  "name": "team_project",
+  "classes": [
+    {
+      "id": "Employee",
+      "name": "Employee",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "employeeId",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Manager",
+      "name": "Manager",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Team",
+      "name": "Team",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Project",
+      "name": "Project",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Manager",
+      "target": "Employee",
+      "kind": "inheritance",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Team",
+      "target": "Employee",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "5..20",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Employee",
+      "target": "Project",
+      "kind": "association",
+      "source_mult": "*",
+      "target_mult": "*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Team",
+      "target": "Project",
+      "kind": "directed_association",
+      "source_mult": "1",
+      "target_mult": "1..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

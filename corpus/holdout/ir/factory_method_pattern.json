@@ -1,0 +1,54 @@
+{
+  "name": "factory_method_pattern",
+  "classes": [
+    {
+      "id": "Creator",
+      "name": "Creator",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "#", "name": "factoryMethod", "type": "Product", "params": "", "is_static": false, "is_abstract": true },
+        { "visibility": "+", "name": "anOperation", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Product",
+      "name": "Product",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteCreator",
+      "name": "ConcreteCreator",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "factoryMethod", "type": "Product", "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteProduct",
+      "name": "ConcreteProduct",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "ConcreteCreator", "target": "Creator", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Creator" },
+    { "source": "ConcreteProduct", "target": "Product", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "solid line, hollow triangle at Product" },
+    { "source": "Creator", "target": "Product", "kind": "dependency", "source_mult": null, "target_mult": null, "label": "use", "confidence": 1.0, "evidence": "dashed arrow labelled <<use>>, open arrowhead at Product" },
+    { "source": "ConcreteCreator", "target": "ConcreteProduct", "kind": "dependency", "source_mult": null, "target_mult": null, "label": "create", "confidence": 1.0, "evidence": "dashed arrow labelled <<create>>, open arrowhead at ConcreteProduct" }
+  ],
+  "notes": [],
+  "warnings": []
+}

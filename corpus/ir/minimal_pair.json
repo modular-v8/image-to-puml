@@ -1,0 +1,37 @@
+{
+  "name": "minimal_pair",
+  "classes": [
+    {
+      "id": "A",
+      "name": "A",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "B",
+      "name": "B",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "A",
+      "target": "B",
+      "kind": "association",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

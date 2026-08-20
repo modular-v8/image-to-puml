@@ -1,0 +1,20 @@
+You are analyzing a UML class diagram image. Identify every class, interface, abstract class, and enum shown in the diagram -- but NOT the relationships between them (leave "relationships": [] in this pass).
+
+For each one, extract:
+- name: its exact displayed name.
+- kind: "class", "interface", "abstract", or "enum".
+- stereotype: text shown in <<guillemets>> above or beside the name, if any, otherwise omit.
+- attributes: each with visibility ("+", "-", "#", or "~") if a marker is shown, name, type if shown, and whether it is static (often shown underlined) or abstract.
+- methods: each with visibility if shown, name, params if shown (as free text, e.g. "x: int, y: int"), the return type if shown, and whether it is static or abstract (often shown in italics).
+
+## Methods lose detail more often than attributes -- check twice
+
+Every method needs the same three things an attribute needs (visibility, name) plus two more that are easy to drop: its **return type** (shown after a ":" following the closing parenthesis, e.g. "getName(): str") and whether it is **static** (underlined text) or **abstract** (italic text). Before finalizing each method, re-check it specifically for a visibility marker (text or icon) and a return type -- both are frequently present but easy to miss, and leaving either blank when it is genuinely shown is a common mistake.
+
+Do not invent a bounding box, a confidence score, or an id for any class -- leave those fields absent; they are assigned by code, not by you.
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.

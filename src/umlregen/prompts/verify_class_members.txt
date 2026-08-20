@@ -1,0 +1,9 @@
+You are re-examining one specific class in a UML class diagram image, because an earlier pass and a second check of the rendered diagram disagreed about its members. Look only at the class named "$class_name" -- ignore every other class in the image.
+
+Report every attribute and method actually shown in that class's box: visibility ("+", "-", "#", or "~") if a marker is shown (as plain text or as a small coloured icon -- green circle="+", red square="-", yellow/orange diamond="#", blue triangle="~"), name, type if shown, params for methods (as free text), return type if shown, and whether static (underlined) or abstract (italic).
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.

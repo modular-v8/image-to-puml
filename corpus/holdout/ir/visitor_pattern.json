@@ -1,0 +1,117 @@
+{
+  "name": "visitor_pattern",
+  "classes": [
+    {
+      "id": "Client",
+      "name": "Client",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": null, "name": "structure", "type": "ObjectStructure", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "visitor1", "type": "Visitor", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "visitor2", "type": "Visitor", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": null, "name": "walk1", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "walk2", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Visitor",
+      "name": "Visitor",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Element",
+      "name": "Element",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "accept", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteVisitor1",
+      "name": "ConcreteVisitor1",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteVisitor2",
+      "name": "ConcreteVisitor2",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "visit", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteElementA",
+      "name": "ConcreteElementA",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "accept", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "operation", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ConcreteElementB",
+      "name": "ConcreteElementB",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": null, "name": "accept", "type": null, "params": "", "is_static": false, "is_abstract": false },
+        { "visibility": null, "name": "operation", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ObjectStructure",
+      "name": "ObjectStructure",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "Client", "target": "Visitor", "kind": "dependency", "source_mult": null, "target_mult": null, "label": "import", "confidence": 1.0, "evidence": "dashed arrow labelled <<import>>" },
+    { "source": "Client", "target": "ObjectStructure", "kind": "dependency", "source_mult": null, "target_mult": null, "label": "import", "confidence": 1.0, "evidence": "dashed arrow labelled <<import>>" },
+    { "source": "ConcreteVisitor1", "target": "Visitor", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at Visitor, shared with ConcreteVisitor2" },
+    { "source": "ConcreteVisitor2", "target": "Visitor", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at Visitor, shared with ConcreteVisitor1" },
+    { "source": "ConcreteElementA", "target": "Element", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at Element, shared with ConcreteElementB" },
+    { "source": "ConcreteElementB", "target": "Element", "kind": "realization", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": "dashed line, hollow triangle at Element, shared with ConcreteElementA" },
+    { "source": "ObjectStructure", "target": "Element", "kind": "aggregation", "source_mult": null, "target_mult": "*", "label": "collection", "confidence": 1.0, "evidence": "solid line labelled '~collection', open arrowhead at Element, '*' multiplicity; whole-part reading of a held collection, no clean diamond glyph rendered" }
+  ],
+  "notes": [
+    { "text": "walk1 () {\n  for (Element element : structure) {\n    element.accept(visitor1);\n  }\n}", "class_id": "Client" },
+    { "text": "visit (ConcreteElementA a) {\n  a.operation();\n}", "class_id": "ConcreteVisitor2" },
+    { "text": "visit (ConcreteElementB b) {\n  b.operation();\n}", "class_id": "ConcreteVisitor2" },
+    { "text": "accept (Visitor v) {\n  v.visit(this);\n}", "class_id": "ConcreteElementA" }
+  ],
+  "warnings": []
+}

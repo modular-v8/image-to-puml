@@ -1,0 +1,155 @@
+{
+  "raw_text": "{\"classes\": [{\"kind\": \"class\", \"name\": \"CreditCard\", \"attributes\": [{\"name\": \"cardNumber\", \"type\": \"str\"}, {\"name\": \"expiryDate\", \"type\": \"str\"}], \"methods\": [{\"name\": \"charge\", \"params\": \"(amount: float)\", \"return_type\": \"bool\"}]}, {\"kind\": \"class\", \"name\": \"Customer\", \"attributes\": [{\"name\": \"customerId\", \"type\": \"str\"}, {\"name\": \"loyaltyPoints\", \"type\": \"int\"}], \"methods\": [{\"name\": \"placeOrder\", \"params\": \"(order: Order)\", \"return_type\": \"void\"}]}, {\"kind\": \"interface\", \"name\": \"PaymentMethod\", \"attributes\": [], \"methods\": [{\"name\": \"charge\", \"params\": \"(amount: float)\", \"return_type\": \"bool\"}]}, {\"kind\": \"class\", \"name\": \"Order\", \"attributes\": [{\"name\": \"orderId\", \"type\": \"str\"}, {\"name\": \"orderDate\", \"type\": \"str\"}], \"methods\": [{\"name\": \"total\", \"return_type\": \"float\"}]}, {\"kind\": \"class\", \"name\": \"Person\", \"attributes\": [{\"name\": \"name\", \"type\": \"str\"}, {\"name\": \"email\", \"type\": \"str\"}], \"methods\": [{\"name\": \"getName\", \"return_type\": \"str\"}]}, {\"kind\": \"class\", \"name\": \"PaymentGateway\", \"stereotype\": \"Service\", \"attributes\": [], \"methods\": [{\"name\": \"authorize\", \"params\": \"(card: CreditCard, amount: float)\", \"return_type\": \"bool\"}]}, {\"kind\": \"class\", \"name\": \"OrderLine\", \"attributes\": [{\"name\": \"quantity\", \"type\": \"int\"}, {\"name\": \"unitPrice\", \"type\": \"float\"}], \"methods\": []}, {\"kind\": \"class\", \"name\": \"Product\", \"attributes\": [{\"name\": \"sku\", \"type\": \"str\"}, {\"name\": \"name\", \"type\": \"str\"}, {\"name\": \"price\", \"type\": \"float\"}], \"methods\": []}], \"name\": null, \"notes\": [], \"relationships\": []}",
+  "parsed_json": {
+    "classes": [
+      {
+        "kind": "class",
+        "name": "CreditCard",
+        "attributes": [
+          {
+            "name": "cardNumber",
+            "type": "str"
+          },
+          {
+            "name": "expiryDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": "charge",
+            "params": "(amount: float)",
+            "return_type": "bool"
+          }
+        ]
+      },
+      {
+        "kind": "class",
+        "name": "Customer",
+        "attributes": [
+          {
+            "name": "customerId",
+            "type": "str"
+          },
+          {
+            "name": "loyaltyPoints",
+            "type": "int"
+          }
+        ],
+        "methods": [
+          {
+            "name": "placeOrder",
+            "params": "(order: Order)",
+            "return_type": "void"
+          }
+        ]
+      },
+      {
+        "kind": "interface",
+        "name": "PaymentMethod",
+        "attributes": [],
+        "methods": [
+          {
+            "name": "charge",
+            "params": "(amount: float)",
+            "return_type": "bool"
+          }
+        ]
+      },
+      {
+        "kind": "class",
+        "name": "Order",
+        "attributes": [
+          {
+            "name": "orderId",
+            "type": "str"
+          },
+          {
+            "name": "orderDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": "total",
+            "return_type": "float"
+          }
+        ]
+      },
+      {
+        "kind": "class",
+        "name": "Person",
+        "attributes": [
+          {
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "name": "email",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": "getName",
+            "return_type": "str"
+          }
+        ]
+      },
+      {
+        "kind": "class",
+        "name": "PaymentGateway",
+        "stereotype": "Service",
+        "attributes": [],
+        "methods": [
+          {
+            "name": "authorize",
+            "params": "(card: CreditCard, amount: float)",
+            "return_type": "bool"
+          }
+        ]
+      },
+      {
+        "kind": "class",
+        "name": "OrderLine",
+        "attributes": [
+          {
+            "name": "quantity",
+            "type": "int"
+          },
+          {
+            "name": "unitPrice",
+            "type": "float"
+          }
+        ],
+        "methods": []
+      },
+      {
+        "kind": "class",
+        "name": "Product",
+        "attributes": [
+          {
+            "name": "sku",
+            "type": "str"
+          },
+          {
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "name": "price",
+            "type": "float"
+          }
+        ],
+        "methods": []
+      }
+    ],
+    "name": null,
+    "notes": [],
+    "relationships": []
+  },
+  "model_id": "google/gemma-4-26b-a4b-it:free",
+  "prompt_tokens": 2541,
+  "completion_tokens": 475,
+  "cost_usd": 0.0
+}

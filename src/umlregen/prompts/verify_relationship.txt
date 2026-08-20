@@ -1,0 +1,29 @@
+You are re-examining one specific candidate relationship in a UML class diagram image, because an earlier pass and a second check of the rendered diagram disagreed about it. Look only at whether there is a direct line or arrow connecting "$source_name" and "$target_name" -- ignore every other class and relationship in the image.
+
+If no line connects them directly, set relationship_exists to false and leave the other fields empty.
+
+If a line does connect them, set relationship_exists to true and report:
+- kind: one of "inheritance", "realization", "composition", "aggregation", "association", "directed_association", "dependency".
+- source_mult / target_mult: the multiplicity label near each end if shown, otherwise omit.
+- label: any text label on the line itself, otherwise omit.
+- evidence: a short phrase describing exactly what you saw -- required, and must describe the actual line style (solid/dashed) and arrowhead/diamond shape, not what a label implies.
+
+## Notation rubric
+
+Direction convention: source is the class named first when the relationship is read aloud as an English sentence.
+
+- inheritance: solid line, a HOLLOW triangle arrowhead pointing at the target.
+- realization: DASHED line, a HOLLOW triangle arrowhead, same placement as inheritance.
+- composition: solid line, a FILLED (solid black) diamond at the source end.
+- aggregation: solid line, a HOLLOW diamond at the source end.
+- directed_association: solid line, a thin open arrowhead pointing at the target.
+- dependency: DASHED line, a thin open arrowhead pointing at the target.
+- association: a plain solid line with NO arrowhead and NO diamond at either end.
+
+A dashed line connecting to a small note or comment box is not a relationship -- if that is all you see between these two classes, set relationship_exists to false.
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.

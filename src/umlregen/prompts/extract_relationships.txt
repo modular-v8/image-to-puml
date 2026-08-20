@@ -1,0 +1,40 @@
+You are analyzing a UML class diagram image. The diagram contains these classes:
+
+$class_list
+
+For every relationship (line or arrow) connecting two of these classes, identify:
+
+- source: the class name at the "reading" end of the relationship -- see the rubric below for which end that is per kind.
+- target: the class name at the other end.
+- kind: one of "inheritance", "realization", "composition", "aggregation", "association", "directed_association", "dependency" -- see the rubric below.
+- source_mult / target_mult: the multiplicity label near each end if shown (e.g. "1", "0..*", "1..*"), otherwise omit.
+- label: any text label on the line itself, otherwise omit.
+- evidence: a short phrase describing exactly what you saw that led to this classification -- the line style (solid/dashed) and the arrowhead/diamond shape and which end it is on. This is required for every relationship.
+
+## Notation rubric
+
+Direction convention: source is the class you would name first if you read the relationship aloud as an English sentence -- e.g. "Dog is-a Animal" (source=Dog), "Car has-a Engine" (source=Car), "Circle implements Shape" (source=Circle), "Order depends-on Gateway" (source=Order).
+
+- inheritance: solid line, a HOLLOW (unfilled) triangle arrowhead. The triangle points at the target (the parent/superclass). The source (child/subclass) is at the plain end.
+- realization: DASHED line, a HOLLOW triangle arrowhead, same placement as inheritance. The target is the interface being implemented.
+- composition: solid line, a FILLED (solid black) diamond. The diamond sits at the source end (the whole/owner). The target (the part) is at the other end.
+- aggregation: solid line, a HOLLOW (unfilled) diamond. Same placement as composition -- diamond at the source (whole), target is the part.
+- directed_association: solid line, a thin open (V-shaped, not a full triangle) arrowhead. It points at the target.
+- dependency: DASHED line, a thin open arrowhead, same shape as directed_association. Points at the target.
+- association: a plain solid line with NO arrowhead and NO diamond at either end. Use the direction convention (which class would be named first) to pick source/target, and say so in evidence.
+
+## Common mistakes to avoid
+
+- **The source is never the class an arrowhead, triangle, or diamond points at.** It is always the class at the *other* end. If your evidence says "arrow points at X", then target=X and source is the other class -- double check this before answering, this exact mix-up is the most common error.
+- **A dashed line connecting to a small note or comment box (a rectangle with a folded corner, usually containing free text or a code snippet) is not a relationship between two classes.** Do not report it, even as a dependency. Only report lines that connect two classes from the list above.
+- **Evidence must describe the line actually drawn, not what a label implies.** A role label like "published by" or "has" does not by itself mean an arrowhead is present -- if you cannot see an arrowhead or diamond on the line, it is a plain association regardless of what the label suggests.
+- **Filled vs. hollow diamond is the hardest visual call here** -- composition's diamond is solid black all the way through; aggregation's is unfilled/outlined. At small size or low image quality these can be hard to tell apart. If you genuinely cannot tell whether a diamond is filled, report aggregation rather than composition -- it is the weaker claim and the safer default when uncertain.
+- If a relationship's kind is stated directly in a text label near the line (e.g. the label itself says "aggregation" or similar) and the graphical glyph is unclear or absent, trust the text label.
+
+Do not invent a confidence score -- leave that field absent. Only report relationships between classes in the list above; do not invent classes.
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.

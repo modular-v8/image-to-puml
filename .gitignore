@@ -1,0 +1,38 @@
+# Machine specific files
+.claude/
+.decisions/
+.serena/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+
+# Planning docs -- kept locally, not published to git
+spec.md
+plan.md
+tasks.md
+
+# Disposable local state
+.cache/
+runs/
+.pytest_cache/
+corpus/puml/
+corpus/holdout/puml/
+
+# External tool binaries (fetched by README install steps, not committed)
+tools/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini

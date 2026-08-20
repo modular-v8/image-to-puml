@@ -1,0 +1,91 @@
+{
+  "raw_text": "{\n  \"classes\": [\n    {\n      \"name\": \"CreditCard\",\n      \"kind\": \"class\"\n    },\n    {\n      \"name\": \"Customer\",\n      \"kind\": \"class\"\n    },\n    {\n      \"name\": \"PaymentMethod\",\n      \"kind\": \"interface\"\n    },\n    {\n      \"name\": \"Order\",\n      \"kind\": \"class\"\n    },\n    {\n      \"name\": \"Person\",\n      \"kind\": \"abstract\"\n    },\n    {\n      \"name\": \"OrderLine\",\n      \"kind\": \"class\"\n    },\n    {\n      \"name\": \"PaymentGateway\",\n      \"kind\": \"class\",\n      \"stereotype\": \"Service\"\n    },\n    {\n      \"name\": \"Product\",\n      \"kind\": \"class\"\n    }\n  ],\n  \"relationships\": [\n    {\n      \"source\": \"CreditCard\",\n      \"target\": \"PaymentMethod\",\n      \"kind\": \"realization\",\n      \"evidence\": \"dashed line with a hollow triangle arrowhead pointing at PaymentMethod\"\n    },\n    {\n      \"source\": \"Customer\",\n      \"target\": \"Order\",\n      \"kind\": \"directed_association\",\n      \"source_mult\": \"1\",\n      \"target_mult\": \"0..*\",\n      \"label\": \"places\",\n      \"evidence\": \"solid line with a thin open arrowhead pointing at Order\"\n    },\n    {\n      \"source\": \"Customer\",\n      \"target\": \"Person\",\n      \"kind\": \"association\",\n      \"evidence\": \"solid line with no arrowhead or diamond between Customer and Person\"\n    },\n    {\n      \"source\": \"Order\",\n      \"target\": \"OrderLine\",\n      \"kind\": \"composition\",\n      \"source_mult\": \"1\",\n      \"target_mult\": \"1..*\",\n      \"evidence\": \"solid line with a filled black diamond at the Order end\"\n    },\n    {\n      \"source\": \"Order\",\n      \"target\": \"PaymentGateway\",\n      \"kind\": \"dependency\",\n      \"label\": \"processes payment via\",\n      \"evidence\": \"dashed line with a thin open arrowhead pointing at PaymentGateway\"\n    },\n    {\n      \"source\": \"OrderLine\",\n      \"target\": \"Product\",\n      \"kind\": \"association\",\n      \"source_mult\": \"*\",\n      \"target_mult\": \"1\",\n      \"label\": \"references\",\n      \"evidence\": \"solid line with no arrowhead or diamond between OrderLine and Product\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "classes": [
+      {
+        "name": "CreditCard",
+        "kind": "class"
+      },
+      {
+        "name": "Customer",
+        "kind": "class"
+      },
+      {
+        "name": "PaymentMethod",
+        "kind": "interface"
+      },
+      {
+        "name": "Order",
+        "kind": "class"
+      },
+      {
+        "name": "Person",
+        "kind": "abstract"
+      },
+      {
+        "name": "OrderLine",
+        "kind": "class"
+      },
+      {
+        "name": "PaymentGateway",
+        "kind": "class",
+        "stereotype": "Service"
+      },
+      {
+        "name": "Product",
+        "kind": "class"
+      }
+    ],
+    "relationships": [
+      {
+        "source": "CreditCard",
+        "target": "PaymentMethod",
+        "kind": "realization",
+        "evidence": "dashed line with a hollow triangle arrowhead pointing at PaymentMethod"
+      },
+      {
+        "source": "Customer",
+        "target": "Order",
+        "kind": "directed_association",
+        "source_mult": "1",
+        "target_mult": "0..*",
+        "label": "places",
+        "evidence": "solid line with a thin open arrowhead pointing at Order"
+      },
+      {
+        "source": "Customer",
+        "target": "Person",
+        "kind": "association",
+        "evidence": "solid line with no arrowhead or diamond between Customer and Person"
+      },
+      {
+        "source": "Order",
+        "target": "OrderLine",
+        "kind": "composition",
+        "source_mult": "1",
+        "target_mult": "1..*",
+        "evidence": "solid line with a filled black diamond at the Order end"
+      },
+      {
+        "source": "Order",
+        "target": "PaymentGateway",
+        "kind": "dependency",
+        "label": "processes payment via",
+        "evidence": "dashed line with a thin open arrowhead pointing at PaymentGateway"
+      },
+      {
+        "source": "OrderLine",
+        "target": "Product",
+        "kind": "association",
+        "source_mult": "*",
+        "target_mult": "1",
+        "label": "references",
+        "evidence": "solid line with no arrowhead or diamond between OrderLine and Product"
+      }
+    ]
+  },
+  "model_id": "google/gemma-4-26b-a4b-it",
+  "prompt_tokens": 2266,
+  "completion_tokens": 593,
+  "cost_usd": 0.0004638
+}

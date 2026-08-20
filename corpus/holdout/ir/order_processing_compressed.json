@@ -1,0 +1,72 @@
+{
+  "name": "order_processing_compressed",
+  "classes": [
+    {
+      "id": "Order",
+      "name": "Order",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "orderId", "type": "str", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": "-", "name": "placedAt", "type": "datetime", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": "+", "name": "totalPrice", "type": "float", "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "OrderLine",
+      "name": "OrderLine",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "sku", "type": "str", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": "-", "name": "quantity", "type": "int", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Customer",
+      "name": "Customer",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "email", "type": "str", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "PaymentGateway",
+      "name": "PaymentGateway",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "charge", "type": "bool", "params": "amount : float", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "ShippingService",
+      "name": "ShippingService",
+      "kind": "interface",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [
+        { "visibility": "+", "name": "schedule", "type": null, "params": "order : Order", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "Order", "target": "OrderLine", "kind": "composition", "source_mult": "1", "target_mult": "1..*", "label": null, "confidence": 1.0, "evidence": null },
+    { "source": "Order", "target": "Customer", "kind": "directed_association", "source_mult": "*", "target_mult": "1", "label": "placed by", "confidence": 1.0, "evidence": null },
+    { "source": "Order", "target": "PaymentGateway", "kind": "dependency", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": null },
+    { "source": "Order", "target": "ShippingService", "kind": "dependency", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": null }
+  ],
+  "notes": [],
+  "warnings": []
+}

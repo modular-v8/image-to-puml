@@ -1,0 +1,193 @@
+{
+  "raw_text": "{\n  \"classes\": [\n    {\n      \"name\": \"CreditCard\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"cardNumber\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"expiryDate\",\n          \"type\": \"str\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"name\": \"charge\",\n          \"params\": \"(amount: float)\",\n          \"type\": \"bool\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Customer\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"customerId\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"loyaltyPoints\",\n          \"type\": \"int\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"name\": \"placeOrder\",\n          \"params\": \"(order: Order)\",\n          \"type\": \"void\"\n        }\n      ]\n    },\n    {\n      \"name\": \"PaymentMethod\",\n      \"kind\": \"interface\",\n      \"stereotype\": null,\n      \"methods\": [\n        {\n          \"name\": \"charge\",\n          \"params\": \"(amount: float)\",\n          \"type\": \"bool\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Order\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"orderId\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"orderDate\",\n          \"type\": \"str\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"name\": \"total\",\n          \"type\": \"float\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Person\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"name\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"str\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"name\": \" semasaName\",\n          \"type\": \"str\"\n        }\n      ]\n    },\n    {\n      \"name\": \"PaymentGateway\",\n      \"kind\": \"class\",\n      \"stereotype\": \"Service\",\n      \"methods\": [\n        {\n          \"name\": \"authorize\",\n          \"params\": \"(card: CreditCard, amount: float)\",\n          \"type\": \"bool\"\n        }\n      ]\n    },\n    {\n      \"name\": \"OrderLine\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"quantity\",\n          \"type\": \"int\"\n        },\n        {\n          \"name\": \"unitPrice\",\n          \"type\": \"float\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Product\",\n      \"kind\": \"class\",\n      \"attributes\": [\n        {\n          \"name\": \"sku\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"str\"\n        },\n        {\n          \"name\": \"price\",\n          \"type\": \"float\"\n        }\n      ]\n    }\n  ],\n  \"relationships\": [\n    {\n      \"source\": \"CreditCard\",\n      \"target\": \"PaymentMethod\",\n      \"kind\": \"realization\",\n      \"evidence\": \"dashed line with a hollow triangle arrowhead pointing at PaymentMethod\"\n    },\n    {\n      \"source\": \"Customer\",\n      \"target\": \"Order\",\n      \"kind\": \"directed_association\",\n      \"label\": \"places\",\n      \"evidence\": \"solid line with an open V-shaped arrowhead pointing at Order\"\n    },\n    {\n      \"source\": \"Person\",\n      \"target\": \"Customer\",\n      \"kind\": \"inheritance\",\n      \"evidence\": \"solid line with a hollow triangle arrowhead pointing at Customer\"\n    },\n    {\n      \"source\": \"Order\",\n      \"target\": \"PaymentGateway\",\n      \"kind\": \"dependency\",\n      \"label\": \"processes payment via\",\n      \"evidence\": \"dashed line with an open arrowhead pointing at PaymentGateway\"\n    },\n    {\n      \"source\": \"Order\",\n      \"target\": \"OrderLine\",\n      \"kind\": \"composition\",\n      \"source_mult\": \"1\",\n      \"target_mult\": \"1..*\",\n      \"evidence\": \"solid line with a filled diamond at the Order end\"\n    },\n    {\n      \"source\": \"OrderLine\",\n      \"target\": \"Product\",\n      \"kind\": \"association\",\n      \"source_mult\": \"*\",\n      \"target_mult\": \"1\",\n      \"evidence\": \"solid line with no arrowhead or diamond\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "classes": [
+      {
+        "name": "CreditCard",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "cardNumber",
+            "type": "str"
+          },
+          {
+            "name": "expiryDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": "charge",
+            "params": "(amount: float)",
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Customer",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "customerId",
+            "type": "str"
+          },
+          {
+            "name": "loyaltyPoints",
+            "type": "int"
+          }
+        ],
+        "methods": [
+          {
+            "name": "placeOrder",
+            "params": "(order: Order)",
+            "type": "void"
+          }
+        ]
+      },
+      {
+        "name": "PaymentMethod",
+        "kind": "interface",
+        "stereotype": null,
+        "methods": [
+          {
+            "name": "charge",
+            "params": "(amount: float)",
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Order",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "orderId",
+            "type": "str"
+          },
+          {
+            "name": "orderDate",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": "total",
+            "type": "float"
+          }
+        ]
+      },
+      {
+        "name": "Person",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "name": "email",
+            "type": "str"
+          }
+        ],
+        "methods": [
+          {
+            "name": " semasaName",
+            "type": "str"
+          }
+        ]
+      },
+      {
+        "name": "PaymentGateway",
+        "kind": "class",
+        "stereotype": "Service",
+        "methods": [
+          {
+            "name": "authorize",
+            "params": "(card: CreditCard, amount: float)",
+            "type": "bool"
+          }
+        ]
+      },
+      {
+        "name": "OrderLine",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "quantity",
+            "type": "int"
+          },
+          {
+            "name": "unitPrice",
+            "type": "float"
+          }
+        ]
+      },
+      {
+        "name": "Product",
+        "kind": "class",
+        "attributes": [
+          {
+            "name": "sku",
+            "type": "str"
+          },
+          {
+            "name": "name",
+            "type": "str"
+          },
+          {
+            "name": "price",
+            "type": "float"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source": "CreditCard",
+        "target": "PaymentMethod",
+        "kind": "realization",
+        "evidence": "dashed line with a hollow triangle arrowhead pointing at PaymentMethod"
+      },
+      {
+        "source": "Customer",
+        "target": "Order",
+        "kind": "directed_association",
+        "label": "places",
+        "evidence": "solid line with an open V-shaped arrowhead pointing at Order"
+      },
+      {
+        "source": "Person",
+        "target": "Customer",
+        "kind": "inheritance",
+        "evidence": "solid line with a hollow triangle arrowhead pointing at Customer"
+      },
+      {
+        "source": "Order",
+        "target": "PaymentGateway",
+        "kind": "dependency",
+        "label": "processes payment via",
+        "evidence": "dashed line with an open arrowhead pointing at PaymentGateway"
+      },
+      {
+        "source": "Order",
+        "target": "OrderLine",
+        "kind": "composition",
+        "source_mult": "1",
+        "target_mult": "1..*",
+        "evidence": "solid line with a filled diamond at the Order end"
+      },
+      {
+        "source": "OrderLine",
+        "target": "Product",
+        "kind": "association",
+        "source_mult": "*",
+        "target_mult": "1",
+        "evidence": "solid line with no arrowhead or diamond"
+      }
+    ]
+  },
+  "model_id": "google/gemma-4-26b-a4b-it:free",
+  "prompt_tokens": 3225,
+  "completion_tokens": 1144,
+  "cost_usd": 0.0
+}

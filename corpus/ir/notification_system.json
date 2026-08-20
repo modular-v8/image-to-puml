@@ -1,0 +1,75 @@
+{
+  "name": "notification_system",
+  "classes": [
+    {
+      "id": "NotificationService",
+      "name": "NotificationService",
+      "kind": "class",
+      "stereotype": "Service",
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "EmailSender",
+      "name": "EmailSender",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "SmsSender",
+      "name": "SmsSender",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "UserPreferences",
+      "name": "UserPreferences",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "NotificationService",
+      "target": "EmailSender",
+      "kind": "dependency",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "NotificationService",
+      "target": "SmsSender",
+      "kind": "dependency",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "NotificationService",
+      "target": "UserPreferences",
+      "kind": "directed_association",
+      "source_mult": null,
+      "target_mult": null,
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

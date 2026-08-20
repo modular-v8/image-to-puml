@@ -1,0 +1,111 @@
+{
+  "name": "library_system",
+  "classes": [
+    {
+      "id": "Library",
+      "name": "Library",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "name",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Book",
+      "name": "Book",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "isbn",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Member",
+      "name": "Member",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "memberId",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    },
+    {
+      "id": "Author",
+      "name": "Author",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        {
+          "visibility": "-",
+          "name": "name",
+          "type": "str",
+          "params": null,
+          "is_static": false,
+          "is_abstract": false
+        }
+      ],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Library",
+      "target": "Book",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "0..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Library",
+      "target": "Member",
+      "kind": "aggregation",
+      "source_mult": "1",
+      "target_mult": "0..*",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    },
+    {
+      "source": "Book",
+      "target": "Author",
+      "kind": "association",
+      "source_mult": "*",
+      "target_mult": "1",
+      "label": null,
+      "confidence": 1.0,
+      "evidence": null
+    }
+  ],
+  "notes": [],
+  "warnings": []
+}

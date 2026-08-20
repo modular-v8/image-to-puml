@@ -1,0 +1,80 @@
+{
+  "name": "media_library_icons",
+  "classes": [
+    {
+      "id": "MediaItem",
+      "name": "MediaItem",
+      "kind": "abstract",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "title", "type": "str", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": "-", "name": "year", "type": "int", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": "+", "name": "getInfo", "type": "str", "params": "", "is_static": false, "is_abstract": true }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Book",
+      "name": "Book",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "isbn", "type": "str", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": "+", "name": "read", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Movie",
+      "name": "Movie",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "durationMinutes", "type": "int", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": "+", "name": "play", "type": null, "params": "", "is_static": false, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Library",
+      "name": "Library",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "name", "type": "str", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [
+        { "visibility": "+", "name": "addItem", "type": null, "params": "item : MediaItem", "is_static": false, "is_abstract": false },
+        { "visibility": "+", "name": "removeItem", "type": null, "params": "id : str", "is_static": false, "is_abstract": false },
+        { "visibility": "+", "name": "getTotalLibraries", "type": "int", "params": "", "is_static": true, "is_abstract": false }
+      ],
+      "bbox": null
+    },
+    {
+      "id": "Publisher",
+      "name": "Publisher",
+      "kind": "class",
+      "stereotype": null,
+      "attributes": [
+        { "visibility": "-", "name": "name", "type": "str", "params": null, "is_static": false, "is_abstract": false },
+        { "visibility": "-", "name": "country", "type": "str", "params": null, "is_static": false, "is_abstract": false }
+      ],
+      "methods": [],
+      "bbox": null
+    }
+  ],
+  "relationships": [
+    { "source": "Book", "target": "MediaItem", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": null },
+    { "source": "Movie", "target": "MediaItem", "kind": "inheritance", "source_mult": null, "target_mult": null, "label": null, "confidence": 1.0, "evidence": null },
+    { "source": "Library", "target": "MediaItem", "kind": "composition", "source_mult": "1", "target_mult": "*", "label": null, "confidence": 1.0, "evidence": null },
+    { "source": "Book", "target": "Publisher", "kind": "association", "source_mult": "*", "target_mult": "1", "label": "published by", "confidence": 1.0, "evidence": null }
+  ],
+  "notes": [],
+  "warnings": []
+}

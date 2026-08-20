@@ -1,0 +1,15 @@
+Your previous answer for this exact image reported zero classes.
+
+If the image genuinely contains no UML classes at all, that is a fine answer -- but look again carefully first, since the most common reasons a class gets missed are:
+- It is drawn with unusual or non-standard notation.
+- It sits inside a package, container, or grouping box, and got skipped along with the container.
+- It uses icon-based visibility markers (colored shapes) instead of plain +/-/#/~ symbols.
+- The image has visible compression artifacts that make a class boundary hard to see at a glance.
+
+Look at the whole image again and report every class, interface, abstract class, and enum you can identify, using the same extraction rules as before: name, kind, stereotype if shown, attributes, and methods with visibility. Leave "relationships": [] in this pass, exactly as before.
+
+Respond with a single JSON object matching this schema exactly:
+
+$schema
+
+Respond with JSON only, no other text.
