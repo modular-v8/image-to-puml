@@ -82,8 +82,19 @@ def _fail(exc: UmlRegenError) -> None:
     raise typer.Exit(code=exc.exit_code)
 
 
-def _build_client(model_id: str, cache_dir: Path, requests_per_minute: float, *, no_cache: bool) -> VisionClient:
-    raw = OpenRouterClient(model_id=model_id, requests_per_minute=requests_per_minute)
+def _build_client(
+    model_id: str,
+    cache_dir: Path,
+    requests_per_minute: float,
+    *,
+    no_cache: bool,
+    repetition_retry_attempts: int = 1,
+) -> VisionClient:
+    raw = OpenRouterClient(
+        model_id=model_id,
+        requests_per_minute=requests_per_minute,
+        repetition_retry_attempts=repetition_retry_attempts,
+    )
     if no_cache:
         return raw
     return CachedVisionClient(raw, model_id=model_id, cache_dir=cache_dir)
@@ -118,7 +129,13 @@ def run(
 ) -> None:
     """Regenerate one image into editable PlantUML source."""
     config = load_config(cli_overrides={"model_id": model})
-    client = _build_client(config.model_id, config.cache_dir, config.requests_per_minute, no_cache=no_cache)
+    client = _build_client(
+        config.model_id,
+        config.cache_dir,
+        config.requests_per_minute,
+        no_cache=no_cache,
+        repetition_retry_attempts=config.repetition_retry_attempts,
+    )
 
     try:
         image_bytes = validate_image(image)
@@ -183,7 +200,13 @@ def eval_command(
     """Score extraction against a labelled corpus (or holdout) directory."""
     config = load_config()
     model_id = model or config.eval_model_id
-    client = _build_client(model_id, config.cache_dir, config.requests_per_minute, no_cache=no_cache)
+    client = _build_client(
+        model_id,
+        config.cache_dir,
+        config.requests_per_minute,
+        no_cache=no_cache,
+        repetition_retry_attempts=config.repetition_retry_attempts,
+    )
 
     try:
         result = run_eval_set(ir_dir, img_dir, client)

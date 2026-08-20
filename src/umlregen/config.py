@@ -82,6 +82,11 @@ class Config(BaseModel):
     verification_max_rounds: int = Field(default=2, ge=0)
     render_format: Literal["svg", "png", "pdf"] = "svg"
     requests_per_minute: float = Field(default=DEFAULT_REQUESTS_PER_MINUTE, gt=0.0)
+    # T5.3: retry once on RepetitionDetected (a fresh, unmodified re-ask),
+    # then fail -- see openrouter.py's _DEFAULT_REPETITION_RETRY_ATTEMPTS
+    # for the evidence. 0 disables the retry and restores T4.18's original
+    # fail-immediately behavior.
+    repetition_retry_attempts: int = Field(default=1, ge=0)
 
 
 _ENV_VARS = {
@@ -92,6 +97,7 @@ _ENV_VARS = {
     "verification_max_rounds": f"{_ENV_PREFIX}VERIFICATION_MAX_ROUNDS",
     "render_format": f"{_ENV_PREFIX}RENDER_FORMAT",
     "requests_per_minute": f"{_ENV_PREFIX}REQUESTS_PER_MINUTE",
+    "repetition_retry_attempts": f"{_ENV_PREFIX}REPETITION_RETRY_ATTEMPTS",
 }
 
 

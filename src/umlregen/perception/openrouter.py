@@ -46,6 +46,16 @@ _DEFAULT_MAX_COMPLETION_TOKENS = 4096
 # T3.37 degenerate-loop protection stays in force for every normal call.
 _DEFAULT_TRUNCATION_RETRY_MAX_TOKENS = 12000
 
+# T5.3, decided 2026-08-20 against T4.22's evidence: 4/4 repetition events
+# on the shipped model cleared on one plain, unmodified re-ask, and a
+# separate sweep of 32 real cached responses found zero false positives
+# from the detector itself -- so a single retry is cheap and effective
+# here. Deliberately small and configurable rather than retry-until-
+# success: T3.28 saw persistent repetition on the frontier ceiling model
+# that a raised cap did not converge, so an unbounded retry policy would
+# be the wrong default for every model this client might point at.
+_DEFAULT_REPETITION_RETRY_ATTEMPTS = 1
+
 
 def _sniff_image_mime(image: bytes) -> str:
     if image[:8] == b"\x89PNG\r\n\x1a\n":
@@ -105,6 +115,7 @@ class OpenRouterClient:
         requests_per_minute: float = 20.0,
         max_completion_tokens: int = _DEFAULT_MAX_COMPLETION_TOKENS,
         truncation_retry_max_tokens: int = _DEFAULT_TRUNCATION_RETRY_MAX_TOKENS,
+        repetition_retry_attempts: int = _DEFAULT_REPETITION_RETRY_ATTEMPTS,
     ) -> None:
         self._api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
         if not self._api_key:
@@ -115,6 +126,7 @@ class OpenRouterClient:
         self._min_interval_seconds = 60.0 / requests_per_minute if requests_per_minute > 0 else 0.0
         self._max_completion_tokens = max_completion_tokens
         self._truncation_retry_max_tokens = truncation_retry_max_tokens
+        self._repetition_retry_attempts = repetition_retry_attempts
         self._last_request_at: float | None = None
 
     def _throttle(self) -> None:
@@ -129,6 +141,31 @@ class OpenRouterClient:
 
     def complete(
         self, image: bytes, prompt: str, schema: dict[str, Any] | None = None
+    ) -> VisionResponse:
+        """T5.3: on `RepetitionDetected`, reissues the entire call fresh
+        and unmodified -- same prompt, same starting cap, no cache
+        involvement -- up to `repetition_retry_attempts` times (default 1)
+        before giving up. Evidence for this policy is T4.22: all 4
+        repetition events observed on the shipped model cleared on a
+        single plain re-ask, with zero false positives across 32 real
+        responses swept separately -- a transient decoding fluke on this
+        model, not the persistent loop T3.28 saw on the frontier ceiling
+        model (where a retry would not be expected to help, hence the
+        count staying small and configurable rather than retry-until-
+        success). Delegates the actual attempt, including the existing
+        truncation-vs-repetition handling below, to `_complete_checked`.
+        """
+        attempts = self._repetition_retry_attempts + 1
+        for attempt in range(attempts):
+            try:
+                return self._complete_checked(image, prompt, schema)
+            except RepetitionDetected:
+                if attempt == attempts - 1:
+                    raise
+        raise AssertionError("unreachable: loop always returns or raises")
+
+    def _complete_checked(
+        self, image: bytes, prompt: str, schema: dict[str, Any] | None
     ) -> VisionResponse:
         """T4.17/T4.18: on a response that hit the token cap
         (`finish_reason == "length"`), checks for T3.37/T3.28's repetition

@@ -41,7 +41,11 @@ class Result(BaseModel):
 
 
 def _default_client(config: Config) -> VisionClient:
-    raw = OpenRouterClient(model_id=config.model_id, requests_per_minute=config.requests_per_minute)
+    raw = OpenRouterClient(
+        model_id=config.model_id,
+        requests_per_minute=config.requests_per_minute,
+        repetition_retry_attempts=config.repetition_retry_attempts,
+    )
     return CachedVisionClient(raw, model_id=config.model_id, cache_dir=config.cache_dir)
 
 

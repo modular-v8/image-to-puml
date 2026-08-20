@@ -104,15 +104,18 @@ def test_truncate_twice_raises_response_truncated() -> None:
     assert client.call_count == 2
 
 
-def test_repetition_in_first_attempt_aborts_without_a_retry_call() -> None:
+def test_repetition_in_first_attempt_aborts_without_a_cap_raise_call() -> None:
+    # repetition_retry_attempts=0 isolates the *inner* behavior this test
+    # actually targets (T4.18: never spend a second call raising the cap
+    # on a loop) from T5.3's separate outer re-ask retry, tested below.
     looping = "Wait_I_will_do_that_" * 60
-    client = _ScriptedPostClient([_api_response(content=looping, finish_reason="length")])
+    client = _ScriptedPostClient(
+        [_api_response(content=looping, finish_reason="length")], repetition_retry_attempts=0
+    )
 
     with pytest.raises(RepetitionDetected):
         client.complete(b"image", "prompt", schema={"type": "object"})
 
-    # The whole point of checking repetition before retrying: never spend
-    # a second call on a loop that raising the cap won't fix.
     assert client.call_count == 1
 
 
@@ -122,13 +125,64 @@ def test_repetition_in_retry_attempt_still_raises_repetition_not_truncated() -> 
         [
             _api_response(content='{"classes": [{"name": "A"', finish_reason="length"),
             _api_response(content=looping, finish_reason="length"),
-        ]
+        ],
+        repetition_retry_attempts=0,
     )
 
     with pytest.raises(RepetitionDetected):
         client.complete(b"image", "prompt", schema={"type": "object"})
 
     assert client.call_count == 2
+
+
+# ---------------------------------------------------------------------------
+# T5.3: the outer retry-once-on-RepetitionDetected policy
+# ---------------------------------------------------------------------------
+
+
+def test_repetition_retry_succeeds_on_a_fresh_unmodified_reask() -> None:
+    looping = "Wait_I_will_do_that_" * 60
+    client = _ScriptedPostClient(
+        [
+            _api_response(content=looping, finish_reason="length"),
+            _api_response(content='{"classes": [{"name": "Foo"}]}', finish_reason="stop", completion_tokens=150),
+        ]
+    )  # default repetition_retry_attempts=1
+
+    result = client.complete(b"image", "prompt", schema={"type": "object"})
+
+    assert result.finish_reason == "stop"
+    assert result.raw_text == '{"classes": [{"name": "Foo"}]}'
+    # Exactly 2 HTTP calls total: the looping first attempt (no cap-raise
+    # retry, per T4.18) plus one full fresh re-ask -- not 3 or 4.
+    assert client.call_count == 2
+
+
+def test_repetition_retry_also_repeats_raises_after_the_configured_count() -> None:
+    looping = "Wait_I_will_do_that_" * 60
+    client = _ScriptedPostClient(
+        [
+            _api_response(content=looping, finish_reason="length"),
+            _api_response(content=looping, finish_reason="length"),
+        ]
+    )  # default repetition_retry_attempts=1: one retry, then fail
+
+    with pytest.raises(RepetitionDetected):
+        client.complete(b"image", "prompt", schema={"type": "object"})
+
+    assert client.call_count == 2
+
+
+def test_repetition_retry_attempts_zero_restores_fail_immediately() -> None:
+    looping = "Wait_I_will_do_that_" * 60
+    client = _ScriptedPostClient(
+        [_api_response(content=looping, finish_reason="length")], repetition_retry_attempts=0
+    )
+
+    with pytest.raises(RepetitionDetected):
+        client.complete(b"image", "prompt", schema={"type": "object"})
+
+    assert client.call_count == 1
 
 
 def test_normal_response_is_returned_unchanged() -> None:
