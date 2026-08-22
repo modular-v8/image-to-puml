@@ -41,6 +41,7 @@ The Graphviz installer does not currently add itself to `PATH`; add it manually 
 Then fetch `plantuml.jar` (no installer; it's a standalone jar):
 
 ```bash
+mkdir -p tools
 curl -sL -o tools/plantuml.jar https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar
 ```
 
@@ -66,6 +67,47 @@ Expected output: `Installation seems OK. File generation OK`.
 uv python pin 3.12
 uv sync
 ```
+
+### API key
+
+Get a key from [openrouter.ai/keys](https://openrouter.ai/keys) (the free tier needs no payment method). The CLI reads `OPENROUTER_API_KEY` from the environment; a `.env` file in the project root is also picked up automatically (real environment variables always win over it). **Never commit `.env`** — it's already covered by `.gitignore`.
+
+```bash
+echo 'OPENROUTER_API_KEY=your-key-here' > .env
+```
+
+### Verify the install
+
+```bash
+uv run uml-regen doctor
+```
+
+Reports the JRE, Graphviz, `plantuml.jar`, and API key presence (never the key's value), plus the resolved cache location. Exits non-zero and names the specific missing piece if anything's wrong.
+
+## Usage
+
+```bash
+uv run uml-regen run path/to/diagram.png
+```
+
+Produces `diagram.puml` (the deliverable) and `diagram.review.md` (any relationships below the confidence threshold, each with its `.puml` line number) next to the input image. Nothing is rendered to an image unless you ask for it:
+
+```bash
+uv run uml-regen run path/to/diagram.png --render svg
+```
+
+Common flags (`uv run uml-regen run --help` for the full list):
+
+| Flag | Effect |
+|---|---|
+| `-o / --output PATH` | Where to write the `.puml` file. Defaults to the input image's path with a `.puml` extension. |
+| `--render svg\|png\|pdf` | Also render the `.puml` to this format. Omit for `.puml` only. |
+| `--model MODEL_ID` | Override the configured vision model (see [Model selection](#model-selection-openrouter-free-tier) below). |
+| `--no-cache` | Bypass the response cache entirely (no read, no write). |
+| `--verify / --no-verify` | Round-trip verification pass. **Off by default** — measured to make relationship F1 *worse*, not better (see [What this project found](#what-this-project-found)). Ships present so that negative result is reproducible. |
+| `-v`, `-vv` | Increase output detail (model/class/relationship counts, then cost/latency/verify stats). |
+
+Two other commands exist for reproducing this project's own evaluation runs rather than everyday use — `uv run uml-regen corpus` (regenerate the fixture corpus from `corpus/ir/*.json`) and `uv run uml-regen eval` (score extraction against a labelled IR directory); `--help` on each documents their flags.
 
 ## Model selection (OpenRouter free tier)
 
