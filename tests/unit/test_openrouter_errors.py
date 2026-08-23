@@ -98,6 +98,31 @@ def test_429_exhausted_raises_provider_rate_limited(monkeypatch: pytest.MonkeyPa
         client.complete(b"fake-image-bytes", "prompt")
 
 
+def test_429_on_free_model_suggests_the_paid_tier_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    # T5.12: a real dogfooding run hit this exact path and the message
+    # suggested nothing actionable -- plan.md's error table always said it
+    # should name --model.
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    monkeypatch.setattr(httpx.Client, "post", lambda self, *a, **k: _response(429))
+    client = _client()  # model_id="test/model:free"
+
+    with pytest.raises(ProviderRateLimited, match=r"--model test/model\b"):
+        client.complete(b"fake-image-bytes", "prompt")
+
+
+def test_429_on_a_non_free_model_suggests_switching_models_generically(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+    monkeypatch.setattr(httpx.Client, "post", lambda self, *a, **k: _response(429))
+    client = OpenRouterClient(
+        model_id="test/paid-model",
+        api_key="fake-key-for-offline-test",
+        requests_per_minute=0,
+    )
+
+    with pytest.raises(ProviderRateLimited, match="Try a different model with --model"):
+        client.complete(b"fake-image-bytes", "prompt")
+
+
 def test_transport_error_retries_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(time, "sleep", lambda s: None)
     calls = {"n": 0}

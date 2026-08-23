@@ -299,9 +299,24 @@ class OpenRouterClient:
 
             if response.status_code == 429:
                 if is_last_attempt:
+                    # T5.12: plan.md's error table always said this should
+                    # suggest --model; a real dogfooding run on the free-tier
+                    # interactive default hit exactly this and the message
+                    # suggested nothing. Free and paid tiers share the same
+                    # base id in this project's naming convention (a bare
+                    # ":free" suffix), so the suggestion can be derived
+                    # rather than hardcoded.
+                    if self._model_id.endswith(":free"):
+                        suggestion = (
+                            f" The free tier can get congested under load -- try "
+                            f"--model {self._model_id.removesuffix(':free')} for the paid "
+                            "tier (a fraction of a cent per diagram), or retry shortly."
+                        )
+                    else:
+                        suggestion = " Try a different model with --model, or retry shortly."
                     raise ProviderRateLimited(
                         f"OpenRouter rate-limited model {self._model_id!r} (429) "
-                        f"after {_MAX_ATTEMPTS} attempts"
+                        f"after {_MAX_ATTEMPTS} attempts.{suggestion}"
                     )
                 time.sleep(_BACKOFF_BASE_SECONDS * (2**attempt))
                 continue
