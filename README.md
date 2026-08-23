@@ -64,9 +64,30 @@ Expected output: `Installation seems OK. File generation OK`.
 
 ### Project setup
 
+To develop on this repo, or run everything from within a clone:
+
 ```bash
 uv python pin 3.12
 uv sync
+```
+
+Commands below in this README assume this path — every `uml-regen ...` is `uv run uml-regen ...` from inside the clone.
+
+### Installing as a standalone command
+
+If you just want the `uml-regen` command available globally, without keeping a clone around:
+
+```bash
+uv tool install "git+https://github.com/modular-v8/image-to-puml.git"
+```
+
+(Once a tagged release exists, pin to it with `@v0.1.0` appended to the URL, e.g. `...image-to-puml.git@v0.1.0` — untagged installs above track `main`.)
+
+This installs a real `uml-regen` executable — no `uv run` prefix needed. One thing changes: `plantuml.jar`'s default location (`tools/plantuml.jar`) is resolved relative to your *current directory*, which only makes sense inside a clone. Running as a standalone tool from an arbitrary directory, point `UMLREGEN_PLANTUML_JAR` at wherever you downloaded it instead:
+
+```bash
+export UMLREGEN_PLANTUML_JAR=/absolute/path/to/plantuml.jar
+uml-regen doctor
 ```
 
 ### API key
@@ -230,10 +251,13 @@ The one original target this baseline didn't clear was Member F1 (77.8% vs. an o
 ## Limitations
 
 - **Hand-drawn or whiteboard diagrams are out of scope.** Everything measured on this page is a rendered or photographed *digital* diagram. Reading a photo of a whiteboard sketch is a different, harder perception problem that was deliberately not attempted here — noted as future work, not a gap that's expected to close on its own.
-- **Class diagrams only.** Sequence, activity, state, component, and use-case diagrams each use different notation and pose a different perception problem; none are supported, and the tool will not tell you it doesn't recognize the diagram type — it will just extract whatever class-shaped structure it can find.
+- **Class diagrams only — and UML *object*/instance diagrams (`instanceName : ClassName` labels) are a different notation the tool will silently mishandle, not reject.** Sequence, activity, state, component, use-case, and object diagrams each use different notation and pose a different perception problem; none are supported. A real first-use test (T5.12) confirmed this concretely: fed a diagram using instance-style labels, the tool kept only the instance name and silently dropped the class name after the colon for every box, with no warning that the input wasn't the notation it expects.
 - **Correctness is only claimed up to 15 classes and 25 relationships.** Beyond that bound the tool still runs and emits a warning rather than refusing, but it's best-effort, not a guarantee — in one internal robustness test at exactly 15 source classes, the model hallucinated a 16th and tripped the bounds warning on an image that wasn't actually oversized.
+- **No folder/batch mode — one image per invocation.** Scoped and then cut (T4.5, 2026-08-20) per spec's own stated cut-order when the schedule needed slack; the eval harness still loops internally, but there's no user-facing way to process a directory of images in one command.
 - **`--verify` ships disabled by default.** It was built, measured, and found to make relationship F1 *worse*, not better, on both evaluation sets (see [What this project found](#what-this-project-found)). It's present so that negative result is reproducible, not because turning it on is recommended.
+- **`review.md`'s confidence score is not a real correctness signal.** It's one of two hardcoded placeholder values, not something the model is actually asked for (T4.16) — the two sources meant to eventually replace it with a real signal (per-connector cropping, verification-loop agreement) were respectively cut and shipped disabled. Confirmed again in real use at T5.12: a diagram where every relationship had a kind or topology error had zero relationships flagged. Treat `review.md` as a mechanically-correct sidecar (its line numbers are right when it does flag something), not as a reliable guide to what to check by hand.
 - **The accuracy scorer matches names exactly, by design, not fuzzily.** This is a deliberate strictness choice (see `ir/diff.py`), but it means a single misread character in a class name — as happened with `MediaItem`/`Medialtem` above — can look like a large relationship-accuracy failure in the metrics when the actual perception error was much smaller. Read any single low score in isolation with that in mind.
 - **Cloud-only inference.** Every image is sent to OpenRouter. There's no local/offline mode, so this tool isn't suitable for confidential or employer-owned diagrams — free-tier providers may retain inputs for product improvement, and even paid tiers are a third party you're trusting with the image.
 - **Single image in, `.puml` text out.** No PDF, SVG, or multi-page input; no combining multiple images into one diagram; and the tool doesn't parse or round-trip arbitrary existing `.puml` — it only generates from an image.
 - **CLI and library only.** No GUI, no web interface, and no PyPI package — install from source via `uv`, as shown above.
+- **Several spec.md acceptance bars are currently unmet, by design or by measurement — none silently dropped.** Two accuracy floors/bars specifically (corpus pair recall, and three of four holdout completion bars) fell below their line when T5.4 closed the failure-rate gap to 0% — diagnosed above, not glossed over. Two functional criteria are unmet outright: `--verify` beating no-verify (a measured negative result) and the batch-mode test (the feature was cut). spec.md's own acceptance-criteria section carries the full item-by-item resolution, dated 2026-08-23.
