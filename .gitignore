@@ -21,6 +21,7 @@ wheels/
 spec.md
 plan.md
 tasks.md
+WRITEUP.md
 
 # Disposable local state
 .cache/
