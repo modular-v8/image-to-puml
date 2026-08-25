@@ -14,6 +14,8 @@ Two real, uncurated diagrams — not cherry-picked test fixtures.
 |---|---|
 | ![source](docs/examples/class-diagram-standard/source.png) | ![output](docs/examples/class-diagram-standard/output.svg) |
 
+*Source: [Automobile Service Station class diagram, Creately](https://creately.com/diagram/example/hezde9vg1/automobile-service-station-class-diagram)*
+
 All 6 classes, attributes and methods essentially complete, both inheritance relationships correctly identified — [full `.puml`](docs/examples/class-diagram-standard/output.puml).
 
 ### A diagram using a notation the tool doesn't target
@@ -21,6 +23,8 @@ All 6 classes, attributes and methods essentially complete, both inheritance rel
 | Source | Regenerated |
 |---|---|
 | ![source](docs/examples/object-instance-notation/source.png) | ![output](docs/examples/object-instance-notation/output.svg) |
+
+*Source: [BoardMix community diagram](https://boardmix.com/community/6b87XkjpLYmSmwKpDCvBZg/)*
 
 This one labels each box as an *instance* of a class (`TestDrive : DriveTrain`) rather than the class itself — a different UML diagram type. All 11 class names came through, but every type was silently dropped, every attribute was lost, and every relationship's kind came back wrong — [full `.puml`](docs/examples/object-instance-notation/output.puml). Nothing in the output warns that this happened; see [What the tool cannot do](#what-the-tool-cannot-do) below.
 
