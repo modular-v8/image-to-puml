@@ -6,7 +6,9 @@ mapping (T4.4). See plan.md's Architecture: `api.py` is the single seam.
 
 from __future__ import annotations
 
+import json
 import os
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -82,6 +84,16 @@ def _fail(exc: UmlRegenError) -> None:
     raise typer.Exit(code=exc.exit_code)
 
 
+def _run_output_dir(image: Path) -> Path:
+    """T7.1: the default per-run output location, `output/<image-stem>/`.
+    `output/` is gitignored -- these are regenerable run artifacts, not
+    source. Kept as a single-purpose helper so the default location is
+    computed the same way everywhere it's needed (the .puml default and
+    the --debug-dir default), rather than duplicated inline.
+    """
+    return Path("output") / image.stem
+
+
 def _build_client(
     model_id: str,
     cache_dir: Path,
@@ -104,7 +116,12 @@ def _build_client(
 def run(
     image: Path = typer.Argument(..., exists=True, dir_okay=False, help="Path to the diagram image (PNG/JPG)."),
     output: Optional[Path] = typer.Option(
-        None, "-o", "--output", help="Where to write the .puml file. Defaults to the image path with a .puml extension."
+        None,
+        "-o",
+        "--output",
+        help="Where to write the .puml file. Defaults to output/<image-stem>/<image-stem>.puml. "
+        "Overrides the default location entirely -- sidecar files (.review.md, .ir.json, run.json, "
+        "and any rendered image) are written next to it, not under output/.",
     ),
     render_format: Optional[RenderFormat] = typer.Option(
         None, "--render", help="Also render the .puml to this format. Omit to produce .puml only, no image."
@@ -123,7 +140,10 @@ def run(
     model: Optional[str] = typer.Option(None, "--model", help="Override the configured vision model id."),
     no_cache: bool = typer.Option(False, "--no-cache", help="Bypass the response cache entirely (no read, no write)."),
     debug_dir: Optional[Path] = typer.Option(
-        None, "--debug-dir", help="Directory for verification's intermediate renders. Only used with --verify."
+        None,
+        "--debug-dir",
+        help="Directory for verification's intermediate renders. Only used with --verify. "
+        "Defaults to output/<image-stem>/debug/.",
     ),
     verbose: int = typer.Option(0, "-v", "--verbose", count=True, help="Increase output detail. Repeatable: -v, -vv."),
 ) -> None:
@@ -137,6 +157,15 @@ def run(
         repetition_retry_attempts=config.repetition_retry_attempts,
     )
 
+    # T7.1: output/<image-stem>/ is the default run location -- nothing
+    # lands in the working directory any more. -o overrides it completely
+    # (a user-specified path is honoured exactly, no output/ prefix
+    # injected); --debug-dir's own default follows the same convention
+    # unconditionally, since debug artifacts belong to the run/input, not
+    # to wherever -o happens to redirect the .puml.
+    run_dir = _run_output_dir(image)
+    effective_debug_dir = debug_dir if debug_dir is not None else (run_dir / "debug")
+
     try:
         image_bytes = validate_image(image)
         result = regenerate(image_bytes, config, client=client)
@@ -148,14 +177,14 @@ def run(
 
         if verify_flag:
             verify_result = verify(
-                diagram, client, max_rounds=config.verification_max_rounds, debug_dir=debug_dir
+                diagram, client, max_rounds=config.verification_max_rounds, debug_dir=effective_debug_dir
             )
             diagram = verify_result.diagram
             puml_text = ir_to_puml(diagram, model_id=config.model_id)
             verify_stats = verify_result.stats
             total_cost += verify_stats.total_cost_usd
 
-        out_path = output if output is not None else image.with_suffix(".puml")
+        out_path = output if output is not None else run_dir / f"{image.stem}.puml"
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(puml_text, encoding="utf-8")
         typer.echo(f"Wrote {out_path}")
@@ -164,10 +193,28 @@ def run(
         write_review(diagram, config.confidence_threshold, review_path)
         typer.echo(f"Wrote {review_path}")
 
+        ir_path = out_path.parent / f"{out_path.stem}.ir.json"
+        ir_path.write_text(diagram.model_dump_json(indent=2), encoding="utf-8")
+        typer.echo(f"Wrote {ir_path}")
+
         if render_format is not None:
             rendered_path = out_path.with_suffix(f".{render_format.value}")
             render_puml(puml_text, render_format.value, rendered_path)
             typer.echo(f"Rendered {rendered_path}")
+
+        # Whitelisted fields only -- never dump `config` wholesale here,
+        # since it would put OPENROUTER_API_KEY on disk in plain text if
+        # a credential field were ever added to Config in the future.
+        run_metadata = {
+            "model_id": config.model_id,
+            "cost_usd": total_cost,
+            "duration_seconds": result.latency_seconds,
+            "warnings": diagram.warnings,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+        run_json_path = out_path.parent / "run.json"
+        run_json_path.write_text(json.dumps(run_metadata, indent=2), encoding="utf-8")
+        typer.echo(f"Wrote {run_json_path}")
     except UmlRegenError as exc:
         _fail(exc)
         return

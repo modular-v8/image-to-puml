@@ -28,6 +28,7 @@ runs/
 .pytest_cache/
 corpus/puml/
 corpus/holdout/puml/
+output/
 
 # External tool binaries (fetched by README install steps, not committed)
 tools/

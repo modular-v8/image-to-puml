@@ -8,6 +8,7 @@ yet built), so a dummy file is sufficient.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -103,6 +104,7 @@ def test_help_lists_all_four_commands() -> None:
 
 
 def test_run_without_render_produces_puml_and_no_image(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)  # T7.1: default output is CWD-relative (output/<stem>/)
     client = _ScriptedClient(
         [
             VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
@@ -115,15 +117,23 @@ def test_run_without_render_produces_puml_and_no_image(tmp_path: Path, monkeypat
     result = runner.invoke(cli.app, ["run", str(image)])
 
     assert result.exit_code == 0, result.output
-    puml_path = image.with_suffix(".puml")
+    run_dir = tmp_path / "output" / image.stem
+    puml_path = run_dir / f"{image.stem}.puml"
     assert puml_path.is_file()
     assert "Foo" in puml_path.read_text(encoding="utf-8")
-    assert not image.with_suffix(".svg").is_file()
-    assert not image.with_suffix(".png").is_file()
+    assert not (run_dir / f"{image.stem}.svg").is_file()
+    assert not (run_dir / f"{image.stem}.png").is_file()
 
 
 @requires_java
 def test_run_with_render_svg_produces_exactly_that_format(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # T7.1: chdir'ing to tmp_path (for output-location isolation) breaks
+    # plantuml.jar's default CWD-relative resolution, since the actual
+    # render call happens after the chdir -- point at the real jar's
+    # absolute path first, exactly as a standalone-tool user would per
+    # the README's UMLREGEN_PLANTUML_JAR instructions.
+    monkeypatch.setenv("UMLREGEN_PLANTUML_JAR", str(Path("tools/plantuml.jar").resolve()))
+    monkeypatch.chdir(tmp_path)
     client = _ScriptedClient(
         [
             VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
@@ -136,12 +146,17 @@ def test_run_with_render_svg_produces_exactly_that_format(tmp_path: Path, monkey
     result = runner.invoke(cli.app, ["run", str(image), "--render", "svg"])
 
     assert result.exit_code == 0, result.output
-    assert image.with_suffix(".svg").is_file()
-    assert not image.with_suffix(".png").is_file()
-    assert not image.with_suffix(".pdf").is_file()
+    run_dir = tmp_path / "output" / image.stem
+    assert (run_dir / f"{image.stem}.svg").is_file()
+    assert not (run_dir / f"{image.stem}.png").is_file()
+    assert not (run_dir / f"{image.stem}.pdf").is_file()
 
 
 def test_run_output_flag_overrides_default_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # T7.1: -o must override the output/<stem>/ default entirely, not just
+    # the old next-to-the-image default -- so this also chdirs and checks
+    # that no output/ directory gets created anywhere at all.
+    monkeypatch.chdir(tmp_path)
     client = _ScriptedClient(
         [
             VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
@@ -157,9 +172,78 @@ def test_run_output_flag_overrides_default_path(tmp_path: Path, monkeypatch: pyt
     assert result.exit_code == 0, result.output
     assert custom_out.is_file()
     assert not image.with_suffix(".puml").is_file()
+    assert (custom_out.parent / "custom.review.md").is_file()
+    assert (custom_out.parent / "custom.ir.json").is_file()
+    assert (custom_out.parent / "run.json").is_file()
+    assert not (tmp_path / "output").exists()
+
+
+def test_run_default_output_creates_the_full_layout_under_output_dir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """T7.1: default layout is output/<stem>/{<stem>.puml, .review.md, .ir.json, run.json}."""
+    monkeypatch.chdir(tmp_path)
+    client = _ScriptedClient(
+        [
+            VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model", cost_usd=0.001),
+            VisionResponse(
+                raw_text="ok", parsed_json=_STAGE_B_ONE_RELATIONSHIP, model_id="test/model", cost_usd=0.002
+            ),
+        ]
+    )
+    _patch_client(monkeypatch, client)
+    image = _dummy_image(tmp_path)
+
+    result = runner.invoke(cli.app, ["run", str(image), "--model", "test/model"])
+
+    assert result.exit_code == 0, result.output
+    run_dir = tmp_path / "output" / image.stem
+    assert run_dir.is_dir()
+    assert (run_dir / f"{image.stem}.puml").is_file()
+    assert (run_dir / f"{image.stem}.review.md").is_file()
+
+    ir_path = run_dir / f"{image.stem}.ir.json"
+    assert ir_path.is_file()
+    ir_data = json.loads(ir_path.read_text(encoding="utf-8"))
+    assert [c["name"] for c in ir_data["classes"]] == ["Foo", "Bar"]
+
+    run_json_path = run_dir / "run.json"
+    assert run_json_path.is_file()
+    run_json_text = run_json_path.read_text(encoding="utf-8")
+    run_data = json.loads(run_json_text)
+    # Whitelisted fields only -- see cli.py's own comment on why this must
+    # never be a wholesale dump of `config`.
+    assert set(run_data.keys()) == {"model_id", "cost_usd", "duration_seconds", "warnings", "timestamp"}
+    assert run_data["model_id"] == "test/model"
+    assert run_data["cost_usd"] == pytest.approx(0.003)
+    assert "OPENROUTER_API_KEY" not in run_json_text
+    assert "sk-" not in run_json_text  # a plausible key-shaped substring, just in case
+
+
+def test_run_default_output_writes_nothing_to_the_working_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """T7.1's actual complaint, asserted directly: nothing lands in cwd any more."""
+    monkeypatch.chdir(tmp_path)
+    client = _ScriptedClient(
+        [
+            VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
+            VisionResponse(raw_text="ok", parsed_json=_STAGE_B_ONE_RELATIONSHIP, model_id="test/model"),
+        ]
+    )
+    _patch_client(monkeypatch, client)
+    image = _dummy_image(tmp_path)  # lives directly in tmp_path -- i.e. "the working directory"
+
+    before = set(tmp_path.iterdir())
+    result = runner.invoke(cli.app, ["run", str(image)])
+    assert result.exit_code == 0, result.output
+
+    new_entries = set(tmp_path.iterdir()) - before
+    assert new_entries == {tmp_path / "output"}, f"unexpected new entries directly in cwd: {new_entries}"
 
 
 def test_run_verify_off_by_default_never_calls_verify(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)  # T7.1: this run succeeds through to the write step
     client = _ScriptedClient(
         [
             VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
@@ -178,6 +262,7 @@ def test_run_verify_off_by_default_never_calls_verify(tmp_path: Path, monkeypatc
 
 
 def test_run_verify_flag_calls_verify(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
     from umlregen.verify.loop import VerifyResult, VerifyStats
 
     client = _ScriptedClient(
@@ -295,6 +380,7 @@ def test_run_maps_no_classes_found_to_its_exit_code(tmp_path: Path, monkeypatch:
 
 
 def test_run_maps_render_failed_to_its_exit_code(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)  # T7.1: succeeds through .puml/.review.md/.ir.json before render fails
     client = _ScriptedClient(
         [
             VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
@@ -369,11 +455,20 @@ def test_malicious_class_name_cannot_escape_the_output_directory(
     result = runner.invoke(cli.app, ["run", str(image), "-o", str(out_path)])
 
     assert result.exit_code == 0, result.output
-    # Only the two expected files exist, exactly where -o and T4.7's
-    # sidecar convention say they should -- nothing escaped tmp_path, and
-    # the malicious raw names never became path components anywhere.
+    # Only the expected files exist, exactly where -o and the sidecar
+    # convention (T4.7, extended by T7.1's .ir.json/run.json) say they
+    # should -- nothing escaped tmp_path, and the malicious raw names
+    # never became path components anywhere.
     written = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob("*") if p.is_file())
-    assert written == sorted([image.relative_to(tmp_path).as_posix(), "out/diagram.puml", "out/diagram.review.md"])
+    assert written == sorted(
+        [
+            image.relative_to(tmp_path).as_posix(),
+            "out/diagram.puml",
+            "out/diagram.review.md",
+            "out/diagram.ir.json",
+            "out/run.json",
+        ]
+    )
     # The class *does* appear in the .puml content (as a sanitized alias
     # and a quoted display name), just never as a filesystem path.
     puml_text = out_path.read_text(encoding="utf-8")

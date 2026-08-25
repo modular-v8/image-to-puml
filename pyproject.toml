@@ -1,12 +1,12 @@
 [project]
 name = "umlregen"
-version = "0.1.0"
+version = "0.1.1"
 description = "Add your description here"
 readme = "README.md"
 authors = [
     { name = "Bhavya Parekh", email = "bhavyaparekh2901@gmail.com" }
 ]
-license = "Apache-2.0"
+license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
