@@ -33,7 +33,7 @@ This one labels each box as an *instance* of a class (`TestDrive : DriveTrain`) 
 - Reads a PNG/JPG/screenshot of a **UML class diagram** and extracts classes, interfaces, abstract classes, stereotypes, attributes, methods, and visibility markers (`+`/`-`/`#`/`~`).
 - Identifies relationships and their kind — inheritance, realization, composition, aggregation, association, dependency — along with multiplicities and edge labels where shown.
 - Outputs clean, human-editable `.puml` text as the actual deliverable, not a picture. Optionally renders it to SVG, PNG, or PDF as a convenience.
-- Runs the same image twice and gets byte-identical output back, instantly and for free the second time — every response is cached locally.
+- Caches every response locally, so re-running with `--reuse-cache` gets byte-identical output back instantly and for free. **Off by default**, deliberately: an ordinary repeat run pays for a fresh answer rather than silently replaying an old one, even if that old one was a fluke.
 - Flags relationships it's least confident about in a `review.md` sidecar, each with the exact `.puml` line to check (see the caveat below on how much to trust this).
 - Works as both a command-line tool and an importable Python library.
 - Costs nothing to try — the default model is free; a one-line override switches to a paid tier that costs a fraction of a cent per diagram if you want more consistent results.
@@ -154,7 +154,7 @@ Common flags (`uv run uml-regen run --help` for the full list):
 | `-o / --output PATH` | Write the `.puml` here instead, overriding the `output/` convention entirely — sidecar files land next to it. |
 | `--render svg\|png\|pdf` | Also render the `.puml` to this format. Omit for `.puml` only. |
 | `--model MODEL_ID` | Override the configured vision model (see [Model selection](#model-selection) below). |
-| `--no-cache` | Bypass the response cache entirely. |
+| `--reuse-cache` | Serve a cached response instead of a fresh call, if one exists for this exact request. **Off by default** — every explicit run pays for a fresh answer unless you opt in. |
 | `--verify / --no-verify` | Optional self-check pass. **Off by default** — see [What the tool cannot do](#what-the-tool-cannot-do). |
 | `-v`, `-vv` | Increase output detail. |
 

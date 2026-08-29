@@ -99,9 +99,18 @@ def _build_client(
     cache_dir: Path,
     requests_per_minute: float,
     *,
-    no_cache: bool,
+    no_cache: bool = False,
+    force_refresh: bool = False,
     repetition_retry_attempts: int = 1,
 ) -> VisionClient:
+    """T7.2: `no_cache` (bypass the cache wrapper entirely -- no read, no
+    write) stays `eval`-only, for a genuine debugging escape hatch.
+    `force_refresh` (always call, still write-through) is `run`'s new
+    default -- see `CachedVisionClient` for why the two are different
+    knobs rather than one: `run` should still leave a fresh entry behind
+    for a later `--reuse-cache` call to find; `eval`'s `--no-cache` never
+    needed that.
+    """
     raw = OpenRouterClient(
         model_id=model_id,
         requests_per_minute=requests_per_minute,
@@ -109,7 +118,7 @@ def _build_client(
     )
     if no_cache:
         return raw
-    return CachedVisionClient(raw, model_id=model_id, cache_dir=cache_dir)
+    return CachedVisionClient(raw, model_id=model_id, cache_dir=cache_dir, force_refresh=force_refresh)
 
 
 @app.command()
@@ -138,7 +147,13 @@ def run(
         ),
     ),
     model: Optional[str] = typer.Option(None, "--model", help="Override the configured vision model id."),
-    no_cache: bool = typer.Option(False, "--no-cache", help="Bypass the response cache entirely (no read, no write)."),
+    reuse_cache: bool = typer.Option(
+        False,
+        "--reuse-cache",
+        help="Serve a cached response instead of a fresh provider call, when one exists for this exact "
+        "request. OFF BY DEFAULT (T7.2): every explicit run pays for a fresh answer unless you opt in -- "
+        "a stale cached response no longer silently stands in for one.",
+    ),
     debug_dir: Optional[Path] = typer.Option(
         None,
         "--debug-dir",
@@ -153,7 +168,7 @@ def run(
         config.model_id,
         config.cache_dir,
         config.requests_per_minute,
-        no_cache=no_cache,
+        force_refresh=not reuse_cache,
         repetition_retry_attempts=config.repetition_retry_attempts,
     )
 
@@ -222,6 +237,14 @@ def run(
     if verbose >= 1:
         typer.echo(f"Model: {config.model_id}")
         typer.echo(f"Classes: {len(diagram.classes)}  Relationships: {len(diagram.relationships)}")
+        # T7.2: the visibility half of the cache-default fix -- a
+        # `--reuse-cache` hit must say so, since a silent hit is exactly
+        # what let a stale response stand in for a fresh answer unnoticed.
+        if isinstance(client, CachedVisionClient) and client.cache_hits > 0:
+            typer.echo(
+                f"Cache: {client.cache_hits} response(s) served from cache, "
+                f"{client.cache_misses} fresh call(s)."
+            )
         if diagram.warnings:
             typer.echo(f"Warnings ({len(diagram.warnings)}):")
             for warning in diagram.warnings:
@@ -269,6 +292,11 @@ def eval_command(
         typer.echo(format_scorecard(aggregated, title=f"Scorecard ({len(result.scored)} diagrams)"))
         typer.echo(f"\nTotal cost: ${result.total_cost_usd:.4f}")
         typer.echo(f"Total warnings: {result.total_warnings}")
+        # T7.2: unconditional, unlike `run`'s -v-gated version -- `eval`
+        # has no verbosity flag, and cache-hit-heavy reproducibility runs
+        # are the expected, desired case here, not a surprise to hide.
+        if isinstance(client, CachedVisionClient) and (client.cache_hits or client.cache_misses):
+            typer.echo(f"Cache: {client.cache_hits} hit, {client.cache_misses} fresh call(s).")
         append_run_log(
             aggregated,
             model_id=model_id,

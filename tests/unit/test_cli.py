@@ -288,36 +288,81 @@ def test_run_verify_flag_calls_verify(tmp_path: Path, monkeypatch: pytest.Monkey
 
 
 # ---------------------------------------------------------------------------
-# T4.10: end-to-end determinism at the CLI boundary
+# T4.10 / T7.2: end-to-end determinism at the CLI boundary, and the
+# cache-default change T7.2 made to it.
 # ---------------------------------------------------------------------------
 
 
-def test_run_twice_with_warm_cache_produces_byte_identical_puml(
+class _CountingClient:
+    def __init__(self, responses: list[VisionResponse]) -> None:
+        self._responses = list(responses)
+        self.call_log: list[str] = []
+
+    def complete(self, image: bytes, prompt: str, schema: dict[str, Any] | None = None) -> VisionResponse:
+        self.call_log.append(prompt)
+        return self._responses.pop(0)
+
+
+def _two_stage_responses() -> list[VisionResponse]:
+    return [
+        VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
+        VisionResponse(raw_text="ok", parsed_json=_STAGE_B_ONE_RELATIONSHIP, model_id="test/model"),
+    ]
+
+
+def test_run_twice_with_reuse_cache_flag_produces_byte_identical_puml(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """T7.2: `--reuse-cache` is the only way `run` now reaches the old
+    "warm cache" behavior -- this test exercises exactly that opt-in path,
+    not the default (see the sibling test below for the default)."""
     from umlregen.perception.cache import CachedVisionClient
 
-    call_log: list[str] = []
-
-    class _CountingClient:
-        def __init__(self, responses: list[VisionResponse]) -> None:
-            self._responses = list(responses)
-
-        def complete(self, image: bytes, prompt: str, schema: dict[str, Any] | None = None) -> VisionResponse:
-            call_log.append(prompt)
-            return self._responses.pop(0)
-
-    inner = _CountingClient(
-        [
-            VisionResponse(raw_text="ok", parsed_json=_STAGE_A_TWO_CLASSES, model_id="test/model"),
-            VisionResponse(raw_text="ok", parsed_json=_STAGE_B_ONE_RELATIONSHIP, model_id="test/model"),
-        ]
-    )
+    inner = _CountingClient(_two_stage_responses())
     # A real CachedVisionClient, not a scripted stand-in -- this is the
-    # actual caching layer `run` uses in production, pointed at a throwaway
-    # directory so "warm cache" here means the same thing it means for a
-    # real user re-running the CLI.
-    cached_client = CachedVisionClient(inner, model_id="test/model", cache_dir=tmp_path / "cache")
+    # actual caching layer `run --reuse-cache` uses in production, pointed
+    # at a throwaway directory so "warm cache" here means the same thing
+    # it means for a real user re-running the CLI with the flag set.
+    # force_refresh=False matches what `--reuse-cache` wires up in cli.py.
+    cached_client = CachedVisionClient(
+        inner, model_id="test/model", cache_dir=tmp_path / "cache", force_refresh=False
+    )
+    monkeypatch.setattr(cli, "_build_client", lambda *a, **k: cached_client)
+
+    image = _dummy_image(tmp_path)
+    out1 = tmp_path / "run1.puml"
+    out2 = tmp_path / "run2.puml"
+
+    result1 = runner.invoke(cli.app, ["run", str(image), "-o", str(out1), "--reuse-cache"])
+    assert result1.exit_code == 0, result1.output
+    result2 = runner.invoke(cli.app, ["run", str(image), "-o", str(out2), "--reuse-cache"])
+    assert result2.exit_code == 0, result2.output
+
+    assert out1.read_bytes() == out2.read_bytes()
+    # Exactly stage A + stage B, once -- the second `run` never touched
+    # the underlying client at all, proving cache reuse rather than
+    # merely coincidentally-identical fresh output.
+    assert len(inner.call_log) == 2
+
+
+def test_run_twice_by_default_makes_two_full_sets_of_fresh_calls(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """T7.2's actual behavior change: without `--reuse-cache`, a second
+    `run` on the same image must NOT be served from cache -- this is the
+    test that would have caught the incident (one bad cached response
+    silently replayed on every later run) had it existed beforehand."""
+    from umlregen.perception.cache import CachedVisionClient
+
+    inner = _CountingClient(_two_stage_responses() + _two_stage_responses())
+    # force_refresh=True matches what `run`'s new default wires up in
+    # cli.py -- constructed directly (rather than going through
+    # `_build_client`) so this test exercises `CachedVisionClient`'s own
+    # force-refresh behavior without depending on flag parsing, which the
+    # kwargs-capturing test below covers separately.
+    cached_client = CachedVisionClient(
+        inner, model_id="test/model", cache_dir=tmp_path / "cache", force_refresh=True
+    )
     monkeypatch.setattr(cli, "_build_client", lambda *a, **k: cached_client)
 
     image = _dummy_image(tmp_path)
@@ -329,11 +374,83 @@ def test_run_twice_with_warm_cache_produces_byte_identical_puml(
     result2 = runner.invoke(cli.app, ["run", str(image), "-o", str(out2)])
     assert result2.exit_code == 0, result2.output
 
-    assert out1.read_bytes() == out2.read_bytes()
-    # Exactly stage A + stage B, once -- the second `run` never touched
-    # the underlying client at all, proving cache reuse rather than
-    # merely coincidentally-identical fresh output.
-    assert len(call_log) == 2
+    # Stage A + stage B, twice -- every explicit invocation pays for a
+    # fresh answer, even though it's a repeat of one already cached.
+    assert len(inner.call_log) == 4
+    assert cached_client.cache_hits == 0
+    assert cached_client.cache_misses == 4
+
+
+def test_run_default_wires_force_refresh_true_into_build_client(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The flag-parsing half: `run` with no cache flag must ask
+    `_build_client` for `force_refresh=True`."""
+    captured: dict[str, Any] = {}
+
+    def _capturing_build_client(*args: Any, **kwargs: Any) -> Any:
+        captured.update(kwargs)
+        return _ScriptedClient(_two_stage_responses())
+
+    monkeypatch.setattr(cli, "_build_client", _capturing_build_client)
+
+    result = runner.invoke(cli.app, ["run", str(_dummy_image(tmp_path))])
+
+    assert result.exit_code == 0, result.output
+    assert captured["force_refresh"] is True
+
+
+def test_run_reuse_cache_flag_wires_force_refresh_false_into_build_client(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def _capturing_build_client(*args: Any, **kwargs: Any) -> Any:
+        captured.update(kwargs)
+        return _ScriptedClient(_two_stage_responses())
+
+    monkeypatch.setattr(cli, "_build_client", _capturing_build_client)
+
+    result = runner.invoke(cli.app, ["run", str(_dummy_image(tmp_path)), "--reuse-cache"])
+
+    assert result.exit_code == 0, result.output
+    assert captured["force_refresh"] is False
+
+
+def test_run_verbose_reports_cache_hits_when_reuse_cache_hits(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """T7.2's visibility requirement: a cache hit must say so under -v --
+    silence here is exactly what let the incident go unnoticed. Genuine
+    end-to-end, no hand-matched prompt text: the first invocation writes
+    the cache (default, force_refresh=True), the second reads it back
+    (--reuse-cache) -- both share the same real cache_dir and image, so
+    the keys line up naturally rather than being asserted by construction.
+    """
+    from umlregen.perception.cache import CachedVisionClient
+
+    cache_dir = tmp_path / "cache"
+
+    def _fresh_client(*args: Any, **kwargs: Any) -> CachedVisionClient:
+        raw = _ScriptedClient(_two_stage_responses())
+        return CachedVisionClient(
+            raw,
+            model_id="test/model",
+            cache_dir=cache_dir,
+            force_refresh=kwargs.get("force_refresh", False),
+        )
+
+    monkeypatch.setattr(cli, "_build_client", _fresh_client)
+    image = _dummy_image(tmp_path)
+
+    first = runner.invoke(cli.app, ["run", str(image), "-o", str(tmp_path / "r1.puml")])
+    assert first.exit_code == 0, first.output
+
+    second = runner.invoke(
+        cli.app, ["run", str(image), "-o", str(tmp_path / "r2.puml"), "--reuse-cache", "-v"]
+    )
+    assert second.exit_code == 0, second.output
+    assert "Cache: 2 response(s) served from cache, 0 fresh call(s)." in second.output
 
 
 # ---------------------------------------------------------------------------
