@@ -23,7 +23,9 @@ Instructions for any AI coding agent working in this repository. Humans wanting 
 
 - Don't touch blocks of code unrelated to the feature you implement. e.g. Don't add comments to a block of code if you did not create it or modify it. As much as possible try to minimize the number of changed lines when implementing a feature.
 
-- When you write a commit message, follow these 7 rules:
+- NEVER NEVER read or try to read confidential information like API Keys from `.env` files.
+
+- If the user allows, when you write a commit message, follow these 7 rules:
   - Rule 1: Separate the subject line from the body with a single blank line.
   - Rule 2: Limit the subject line to 50 characters (72 is the absolute hard limit).
   - Rule 3: Capitalize the first letter of the subject line.
@@ -35,7 +37,7 @@ Instructions for any AI coding agent working in this repository. Humans wanting 
   - Rule 7: Use the body to explain what and why vs. how. Assume the code explains the how;
         the message must explain the context and reasoning. 
 
-- If the prompt indicates that a bug is being fixed, don't write the fix right away. First write the test. Observe it failing. Then write the fix. And observe the test passing.     
+-  
 
 ## Tool Specific Rules
 
@@ -62,7 +64,7 @@ Rendering tests need a JRE, Graphviz, and `tools/plantuml.jar` (gitignored, fetc
 
 This project calls a real, metered AI provider (OpenRouter) for its core functionality. Before making a live call:
 - **Say which model you're using** and roughly what it'll cost, before making the call.
-- **Prefer the cache.** Every response is cached on disk keyed by image+prompt+model+params. Re-running the exact same call is free and instant (near-zero latency is how you can tell it was a cache hit, not a fresh call).
+- **Reuse deliberately, don't rely on it happening automatically.** Every response is cached on disk keyed by image+prompt+model+params, but as of T7.2, `run` no longer reads from it by default — every explicit `run` is a fresh, paid call, on purpose (a stale cached response silently answering a new command was a real incident, not a hypothetical). If you genuinely want to replay a prior result for free, pass `--reuse-cache` explicitly; don't assume a re-run is free without it, and don't infer "that was a cache hit" from low latency alone the way this note used to suggest — check for the flag instead. `eval` is unchanged and still reads the cache by default, since reproducible scoring is its actual purpose.
 - **Don't chain multiple live calls silently.** One call, report the result, then decide on the next one — especially for anything beyond a single small diagram.
 - The free-tier default (`google/gemma-4-26b-a4b-it:free`) rate-limits under load. For anything beyond a one-off interactive check, use `--model google/gemma-4-26b-a4b-it` (the paid tier of the same model) — it costs a fraction of a cent per call and has no rate limit.
 
