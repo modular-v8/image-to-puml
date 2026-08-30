@@ -14,9 +14,9 @@ Two real, uncurated diagrams — not cherry-picked test fixtures.
 |---|---|
 | ![source](docs/examples/class-diagram-standard/source.png) | ![output](docs/examples/class-diagram-standard/output.svg) |
 
-*Source: [Automobile Service Station class diagram, Creately](https://creately.com/diagram/example/hezde9vg1/automobile-service-station-class-diagram)*
+*Source: [UML Class Diagram Example, Visual Paradigm](https://online.visual-paradigm.com/de/diagrams/templates/class-diagram/uml-class-diagram-example-car/)*
 
-All 6 classes, attributes and methods essentially complete, both inheritance relationships correctly identified — [full `.puml`](docs/examples/class-diagram-standard/output.puml).
+All 10 classes, attributes and methods essentially complete, both inheritance relationships correctly identified — [full `.puml`](docs/examples/class-diagram-standard/output.puml).
 
 ### A diagram using a notation the tool doesn't target
 
@@ -31,12 +31,11 @@ This one labels each box as an *instance* of a class (`TestDrive : DriveTrain`) 
 ## What the tool can do
 
 - Reads a PNG/JPG/screenshot of a **UML class diagram** and extracts classes, interfaces, abstract classes, stereotypes, attributes, methods, and visibility markers (`+`/`-`/`#`/`~`).
-- Identifies relationships and their kind — inheritance, realization, composition, aggregation, association, dependency — along with multiplicities and edge labels where shown.
-- Outputs clean, human-editable `.puml` text as the actual deliverable, not a picture. Optionally renders it to SVG, PNG, or PDF as a convenience.
+- **Identifies relationships and their kind** — inheritance, realization, composition, aggregation, association, dependency — along with multiplicities and edge labels where shown.
+- Outputs clean, **human-editable `.puml`** text as the actual deliverable, not a picture. Optionally **renders** it to SVG, PNG, or PDF as a convenience.
 - Caches every response locally, so re-running with `--reuse-cache` gets byte-identical output back instantly and for free. **Off by default**, deliberately: an ordinary repeat run pays for a fresh answer rather than silently replaying an old one, even if that old one was a fluke.
-- Flags relationships it's least confident about in a `review.md` sidecar, each with the exact `.puml` line to check (see the caveat below on how much to trust this).
-- Works as both a command-line tool and an importable Python library.
-- Costs nothing to try — the default model is free; a one-line override switches to a paid tier that costs a fraction of a cent per diagram if you want more consistent results.
+- Works as both a command-line tool and an **importable Python library**.
+- **Costs nothing to try** — the default model is free; a one-line override switches to a paid tier that costs a fraction of a cent per diagram if you want more consistent results.
 
 ## What the tool cannot do
 
