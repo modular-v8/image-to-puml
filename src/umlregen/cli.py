@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+import uvicorn
 
 from umlregen.api import regenerate
 from umlregen.config import load_config
@@ -31,11 +32,16 @@ from umlregen.generate.puml import ir_to_puml
 from umlregen.generate.review import write_review
 from umlregen.input_validation import validate_image
 from umlregen.perception.cache import CachedVisionClient
+from umlregen.perception.claude_agent import CLAUDE_MODEL_PREFIX, ClaudeAgentClient
 from umlregen.perception.client import VisionClient
 from umlregen.perception.openrouter import OpenRouterClient
 from umlregen.render.plantuml import preflight as render_preflight
 from umlregen.render.plantuml import render as render_puml
+from umlregen.ui.app import DEFAULT_UI_PORT, UI_HOST, create_app
 from umlregen.verify.loop import verify
+
+_STATIC_DIR = Path(__file__).parent / "ui" / "static"
+_UI_BUILD_HINT = "Build it with `pnpm --dir web install && pnpm --dir web build`, then retry."
 
 app = typer.Typer(
     add_completion=False,
@@ -111,11 +117,16 @@ def _build_client(
     for a later `--reuse-cache` call to find; `eval`'s `--no-cache` never
     needed that.
     """
-    raw = OpenRouterClient(
-        model_id=model_id,
-        requests_per_minute=requests_per_minute,
-        repetition_retry_attempts=repetition_retry_attempts,
-    )
+    raw: VisionClient
+    if model_id.startswith(CLAUDE_MODEL_PREFIX):
+        # Claude models go through the user's Claude account, not OpenRouter.
+        raw = ClaudeAgentClient(model_id=model_id)
+    else:
+        raw = OpenRouterClient(
+            model_id=model_id,
+            requests_per_minute=requests_per_minute,
+            repetition_retry_attempts=repetition_retry_attempts,
+        )
     if no_cache:
         return raw
     return CachedVisionClient(raw, model_id=model_id, cache_dir=cache_dir, force_refresh=force_refresh)
@@ -319,6 +330,35 @@ def corpus() -> None:
     """Regenerate the corpus fixtures (.puml + rendered PNG) from corpus/ir/*.json."""
     for path in build_corpus():
         typer.echo(f"wrote {path}")
+
+
+@app.command()
+def serve(
+    port: int = typer.Option(DEFAULT_UI_PORT, "--port", help="Local port to listen on."),
+    model: Optional[str] = typer.Option(None, "--model", help="Override the configured vision model id."),
+) -> None:
+    """Start the local web UI (127.0.0.1 only)."""
+    if not (_STATIC_DIR / "index.html").is_file():
+        typer.echo(f"Error: the web UI is not built ({_STATIC_DIR / 'index.html'} is missing). {_UI_BUILD_HINT}", err=True)
+        raise typer.Exit(code=1)
+
+    config = load_config(cli_overrides={"model_id": model})
+    try:
+        # force_refresh, like `run`: every UI regeneration is a fresh call.
+        client = _build_client(
+            config.model_id,
+            config.cache_dir,
+            config.requests_per_minute,
+            force_refresh=True,
+            repetition_retry_attempts=config.repetition_retry_attempts,
+        )
+    except UmlRegenError as exc:
+        _fail(exc)
+        return
+
+    typer.echo(f"Model: {config.model_id}")
+    typer.echo(f"Serving at http://{UI_HOST}:{port}")
+    uvicorn.run(create_app(config, client, _STATIC_DIR), host=UI_HOST, port=port, log_level="warning")
 
 
 @app.command()

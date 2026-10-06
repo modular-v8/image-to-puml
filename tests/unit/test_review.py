@@ -8,7 +8,7 @@ than silently passing against a stale expectation.
 from __future__ import annotations
 
 from umlregen.generate.puml import ir_to_puml
-from umlregen.generate.review import build_review
+from umlregen.generate.review import build_review, flagged_items
 from umlregen.ir.models import Class, Diagram, RelKind, Relationship
 
 
@@ -97,3 +97,14 @@ def test_puml_determinism_still_holds_with_header_and_theme() -> None:
     first = ir_to_puml(diagram, model_id="test/model", include_theme=True)
     second = ir_to_puml(diagram, model_id="test/model", include_theme=True)
     assert first == second
+
+
+def test_flagged_items_are_in_puml_line_order_and_match_the_markdown() -> None:
+    diagram = _diagram(rel_confidences=[0.1, 0.5, 0.2])
+    items = flagged_items(diagram, threshold=0.3)
+
+    assert [i.line for i in items] == sorted(i.line for i in items)
+    assert len(items) == 2
+    review_text = build_review(diagram, threshold=0.3)
+    for item in items:
+        assert f"`.puml:{item.line}`" in review_text

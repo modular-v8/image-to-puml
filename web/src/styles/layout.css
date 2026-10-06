@@ -1,0 +1,22 @@
+/* App-specific layout values. Components reference these by name; the
+   Tilda design files define no layout sizes of this kind. */
+:root {
+  /* Bottom row: PlantUML code (left) vs rendered diagram (right), as grid fractions. */
+  --code-fr: 2fr;
+  --diagram-fr: 3fr;
+
+  /* Source preview height in the single-column layout. */
+  --thumb-max-height: 240px;
+  --dropzone-max-height: 160px;
+  /* Desktop: drop zone without its icon cluster. */
+  --dropzone-max-height-lg: 112px;
+  --diagram-min-height: 60vh;
+  --code-min-height: 320px;
+
+  /* Desktop one-screen shell: below this height the page scrolls instead. */
+  --shell-min-height: 760px;
+  --review-max-height: 40vh;
+
+  /* Margin around the full-size diagram viewer. */
+  --viewer-inset: var(--spacing-16);
+}

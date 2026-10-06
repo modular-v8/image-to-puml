@@ -30,6 +30,7 @@ runs/
 corpus/puml/
 corpus/holdout/puml/
 output/
+docs/Post Image.png
 
 # External tool binaries (fetched by README install steps, not committed)
 tools/
@@ -38,3 +39,5 @@ tools/
 .DS_Store
 Thumbs.db
 desktop.ini
+# Frontend dependencies (the built bundle in src/umlregen/ui/static IS committed)
+web/node_modules/

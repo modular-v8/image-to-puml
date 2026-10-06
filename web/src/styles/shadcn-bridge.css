@@ -1,0 +1,83 @@
+/* Aliases shadcn's variables to Tilda tokens, so Extend UI's components
+   inherit the Tilda look without edits to their source. Coral is
+   deliberately unmapped: only the Button `cta` variant uses it. */
+:root {
+  --background: var(--color-paper-white);
+  --foreground: var(--color-ink-black);
+  --muted: var(--color-bone);
+  --muted-foreground: var(--color-smoke);
+  --border: var(--color-bone);
+  --input: var(--color-bone);
+  --primary: var(--color-ink-black);
+  --primary-foreground: var(--color-paper-white);
+  --accent: var(--color-silver);
+  --accent-foreground: var(--color-ink-black);
+  --ring: var(--color-ink-black);
+  --radius: var(--radius-cards);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --font-sans: "Inter Variable", var(--font-tildasans);
+
+  /* Extend's cards use rounded-lg/xl and shadcn's card/popover colours. */
+  --radius-lg: var(--radius-cards);
+  --radius-xl: var(--radius-cards);
+  --color-card: var(--color-paper-white);
+  --color-card-foreground: var(--color-ink-black);
+  --color-popover: var(--color-paper-white);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Extend's upload card hard-codes an arbitrary corner radius and shadows.
+   Overridden from outside, so its generated source stays untouched. */
+.tilda-upload [role="button"],
+.tilda-upload [data-slot="card"] {
+  border-radius: var(--radius-cards);
+}
+
+/* Compact drop zone: Extend sets a 256px minimum height and generous
+   padding; the rail wants it short. */
+.tilda-upload [role="button"] {
+  min-height: 0;
+  max-height: var(--dropzone-max-height);
+  gap: var(--spacing-8);
+  padding-block: var(--spacing-12);
+}
+
+/* On desktop the input row is fixed-height and every pixel it saves goes to
+   the diagram, so the decorative icon cluster goes and the zone gets shorter
+   (1024px is Tailwind's `lg`). */
+@media (min-width: 1024px) {
+  .tilda-upload [role="button"] {
+    max-height: var(--dropzone-max-height-lg);
+  }
+
+  .tilda-upload [role="button"] > :first-child {
+    display: none;
+  }
+}
+
+/* The Card primitive pads vertically; Extend's icon tiles are fixed-size. */
+.tilda-upload [data-slot="card"] {
+  padding-block: 0;
+}
+
+.tilda-upload * {
+  box-shadow: none;
+}

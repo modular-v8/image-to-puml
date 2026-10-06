@@ -30,3 +30,30 @@ jobs:
       # and this is the check that actually enforces it continuously.
       - name: Run offline test suite
         run: uv run pytest -q
+
+  # The built UI is committed so installed users need no Node. This job
+  # fails when web/ source changed without rebuilding src/umlregen/ui/static.
+  frontend:
+    name: frontend bundle is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from web/package.json's "packageManager" field.
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install and build
+        run: |
+          pnpm --dir web install --frozen-lockfile
+          pnpm --dir web build
+
+      - name: Fail if the committed bundle differs
+        run: git diff --exit-code -- src/umlregen/ui/static

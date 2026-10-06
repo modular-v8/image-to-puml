@@ -47,7 +47,7 @@ This one labels each box as an *instance* of a class (`TestDrive : DriveTrain`) 
 - **Sends every image to a cloud AI provider (OpenRouter).** There's no offline or local mode, so this isn't appropriate for confidential or proprietary diagrams.
 - **Its optional self-check pass (`--verify`) doesn't actually help.** It's measured to make output *less* accurate, not more, so it's off by default.
 - **Only generates `.puml` — it doesn't read or edit existing PlantUML files.**
-- **Command-line and library only.** No GUI, no web interface.
+- **One image at a time, one local user.** The [web UI](#web-ui) is a thin layer over the same pipeline: no model switching, batch upload, history, or hosting beyond `127.0.0.1`.
 - **Best accuracy is only claimed up to about 15 classes and 25 relationships per diagram.** Beyond that it still runs and warns you, but treat the result as rougher.
 
 ## Installation
@@ -159,6 +159,25 @@ Common flags (`uv run uml-regen run --help` for the full list):
 
 Two other commands exist for reproducing this project's own evaluation runs rather than everyday use — `uv run uml-regen corpus` and `uv run uml-regen eval`; `--help` on each documents their flags.
 
+## Web UI
+
+```bash
+uv run uml-regen serve
+```
+
+Open the printed `http://127.0.0.1:8765`, drop a class-diagram PNG/JPG, and click **Regenerate**. Three panes show the source image, the editable PlantUML, and the rendered diagram; a strip below shows warnings, the review, cost and duration. Editing the code and clicking **Re-render** calls PlantUML only, never the model. Download buttons save the current `.puml` and `.svg`.
+
+- The header always shows the active model and a `free`/`paid` tag. The model is fixed at startup; to switch, stop the server (Ctrl+C) and restart it with `--model` **after** `serve`:
+
+  ```bash
+  uv run uml-regen serve --model google/gemma-4-26b-a4b-it
+  ```
+
+  The environment variable and config file work as for `run`. Every regenerate is a fresh, paid-or-quota call; page load, re-render and download never call a model.
+- `--port N` changes the port. The server binds `127.0.0.1` only and has no auth: don't expose it.
+- Nothing is written to `output/`; use the download buttons.
+- The built frontend ships inside the package, so no Node is needed to run it. Node and pnpm are only for changing it; see `AGENT.md`.
+
 ## Model selection
 
 The default model is free (`google/gemma-4-26b-a4b-it:free`) — a stranger's first run costs $0. It's fast and generally reliable, but occasionally returns a malformed or incomplete response; a retry mechanism handles that automatically. If you hit a rate limit (the free tier can get congested under load), override to the paid tier of the same model:
@@ -168,6 +187,15 @@ uv run uml-regen run "path/to/diagram.png" --model google/gemma-4-26b-a4b-it
 ```
 
 This costs a fraction of a cent per diagram and has no rate limit. It's also what this project's own accuracy figures below were measured on, since the free tier's reliability was found to vary too much run-to-run to trust for measurement. Any OpenRouter vision-capable model ID can be passed to `--model`.
+
+A model ID starting with `claude-` (e.g. `--model claude-opus-5-5`; hyphens, not dots) goes through the [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview) instead of OpenRouter, so it draws on your logged-in Claude Code (Pro/Max) plan, with no OpenRouter key needed. Install the optional extra and log in once:
+
+```bash
+uv sync --extra claude
+claude
+```
+
+If `ANTHROPIC_API_KEY` is set in your environment, the Claude CLI bills that key instead of your plan. The reported cost is the API-equivalent price, not a charge; usage counts against your plan's limits.
 
 ## Accuracy
 

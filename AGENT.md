@@ -66,6 +66,7 @@ This project calls a real, metered AI provider (OpenRouter) for its core functio
 - **Say which model you're using** and roughly what it'll cost, before making the call.
 - **Reuse deliberately, don't rely on it happening automatically.** Every response is cached on disk keyed by image+prompt+model+params, but as of T7.2, `run` no longer reads from it by default — every explicit `run` is a fresh, paid call, on purpose (a stale cached response silently answering a new command was a real incident, not a hypothetical). If you genuinely want to replay a prior result for free, pass `--reuse-cache` explicitly; don't assume a re-run is free without it, and don't infer "that was a cache hit" from low latency alone the way this note used to suggest — check for the flag instead. `eval` is unchanged and still reads the cache by default, since reproducible scoring is its actual purpose.
 - **Don't chain multiple live calls silently.** One call, report the result, then decide on the next one — especially for anything beyond a single small diagram.
+- `--model claude-*` routes through the Claude Agent SDK and the user's logged-in Claude plan (`perception/claude_agent.py`, optional extra `claude`), not OpenRouter. It spends plan quota, not dollars; say so before calling.
 - The free-tier default (`google/gemma-4-26b-a4b-it:free`) rate-limits under load. For anything beyond a one-off interactive check, use `--model google/gemma-4-26b-a4b-it` (the paid tier of the same model) — it costs a fraction of a cent per call and has no rate limit.
 
 ### Never open, read, or print `.env`
@@ -94,6 +95,16 @@ image -> perception/ (talks to the model, returns a typed IR) -> generate/ (pure
 - `uv tool install` / `uv tool uninstall` can fail mid-operation with a Windows file-lock error (`os error 32`) on native `.pyd` files, most likely from real-time antivirus scanning. If this happens, don't force-retry repeatedly or try to pause security software yourself — use `uvx --from <spec> <command>` instead, which runs from an isolated ephemeral cache and sidesteps the lock entirely.
 - Editing `~/.bashrc` (or similar dotfiles) from a Windows GUI text editor can silently save it as UTF-16, which breaks Git Bash's ability to source it. If a shell environment variable you expect to be set isn't showing up, check the file's encoding before assuming the variable was never set.
 - This tool runs Git Bash's `sh`, not PowerShell — commands and path syntax should target that shell unless a task specifically needs PowerShell (e.g., `Remove-Item` when a POSIX `rm` won't clear a Windows file lock).
+
+### Web UI (`uml-regen serve`)
+
+- Backend: `src/umlregen/ui/` is a thin FastAPI layer over `umlregen.api.regenerate()`. Don't reimplement pipeline steps there. Tests use a fake client: `tests/unit/test_ui_api.py`.
+- Frontend: `web/` (React, Vite, Tailwind v4, shadcn, Extend UI). Node and pnpm are only needed to change it, never to run it.
+- Read `web/design/DESIGN.md` and `web/design/README.md` before any UI work. Use tokens by name (`bg-bone`, `p-(--spacing-16)`); no raw hex, pixel sizes, or radii in components. Coral is the Regenerate button only.
+- Change the UI, then `pnpm --dir web install && pnpm --dir web build`, and commit `src/umlregen/ui/static/` with the source. CI fails if they differ.
+- Never hand-edit `src/umlregen/ui/static/` or `web/src/components/extend/`. Restyle Extend components from `web/src/styles/shadcn-bridge.css`.
+- Keep the `--spacing-*` reset in `web/src/styles/index.css`: without it `theme.css` makes `size-12` 12px and breaks Extend's layout.
+- Every UI Regenerate is a live, metered call. Don't click it in checks without naming the model first.
 
 ### Where to look for more context
 

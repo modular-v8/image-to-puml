@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "../../design/theme.css";
+@import "../../design/variables.css";
+@import "./shadcn-bridge.css";
+@import "./layout.css";
+
+/* theme.css names its spacing tokens --spacing-8, --spacing-12, ..., which
+   Tailwind also reads as the numeric scale: `size-12` would become 12px,
+   not 48px, and break Extend's components. Drop them from Tailwind's theme
+   and keep Tilda's scale as plain :root variables (variables.css), which
+   components reference as p-(--spacing-16), gap-(--spacing-12), etc. */
+@theme {
+  --spacing-*: initial;
+  --spacing: 0.25rem;
+}
